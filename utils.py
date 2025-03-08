@@ -55,6 +55,15 @@ ISRAELI_CITIES = [
     "Lod",
     "Givatayim",
 
+    # Haifa Metropolitan Area (Krayot)
+    "Kiryat Bialik",
+    "Kiryat Motzkin",
+    "Kiryat Yam",
+    "Kiryat Ata",
+    "Kiryat Haim",
+    "Nesher",
+    "Tirat Carmel",
+
     # Northern Cities
     "Tiberias",
     "Safed",
@@ -62,14 +71,14 @@ ISRAELI_CITIES = [
     "Kiryat Shmona",
     "Afula",
     "Nazareth",
-    "Kiryat Motzkin",
-    "Maalot-Tarshiha",
-    "Kiryat Yam",
     "Migdal HaEmek",
     "Yokneam Illit",
     "Kiryat Tivon",
     "Rosh Pina",
     "Metula",
+    "Maalot-Tarshiha",
+    "Carmiel",
+    "Nahariya",
 
     # Central Region
     "Ramat HaSharon",
@@ -86,6 +95,9 @@ ISRAELI_CITIES = [
     "Kadima-Zoran",
     "Tel Mond",
     "Kfar Yona",
+    "Ramat Hasharon",
+    "Givat Shmuel",
+    "Yehud-Monosson",
 
     # Southern Cities
     "Eilat",
@@ -102,6 +114,10 @@ ISRAELI_CITIES = [
     "Kiryat Malakhi",
     "Beer Yaakov",
     "Kuseife",
+    "Tel Sheva",
+    "Lehavim",
+    "Meitar",
+    "Omer",
 
     # Sharon Region
     "Hadera",
@@ -114,6 +130,8 @@ ISRAELI_CITIES = [
     "Caesarea",
     "Bat Hefer",
     "Ein Iron",
+    "Kfar Yona",
+    "Tel Mond",
 
     # Judea and Samaria
     "Maale Adumim",
@@ -126,6 +144,9 @@ ISRAELI_CITIES = [
     "Oranit",
     "Elkana",
     "Karnei Shomron",
+    "Kedumim",
+    "Beit El",
+    "Kochav Yaakov",
 
     # Galilee Region
     "Karmiel",
@@ -137,7 +158,11 @@ ISRAELI_CITIES = [
     "Maghar",
     "Arraba",
     "I'billin",
-    "Kafr Kanna"
+    "Kafr Kanna",
+    "Yafa an-Naseriyye",
+    "Julis",
+    "Abu Sinan",
+    "Jadeidi-Makr"
 ]
 
 WEATHER_ICONS = {

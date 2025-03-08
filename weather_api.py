@@ -64,7 +64,7 @@ class WeatherAPI:
             }],
             'wind': {
                 'speed': current.get('wind_kph', 0),
-                'degree': current.get('wind_degree', 0),
+                'deg': current.get('wind_degree', 0),
                 'direction': current.get('wind_dir', 'N')
             }
         }

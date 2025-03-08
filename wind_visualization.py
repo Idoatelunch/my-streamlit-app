@@ -33,8 +33,9 @@ def create_wind_overlay(city_data: List[Dict]):
         arrow_traces = []
         for city in city_data:
             # Calculate arrow endpoint using wind direction and speed
-            angle = np.radians(city['wind_degree'])
-            speed_factor = city['wind_speed'] / 50.0  # Normalize arrow length
+            wind_degree = city.get('wind_degree', 0)  # Default to 0 if missing
+            angle = np.radians(wind_degree)
+            speed_factor = city.get('wind_speed', 0) / 50.0  # Normalize arrow length
             
             # Calculate arrow endpoint
             dx = speed_factor * np.cos(angle) * 0.1

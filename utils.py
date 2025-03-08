@@ -1,6 +1,7 @@
 from typing import Dict, List
 import pandas as pd
 from datetime import datetime
+from fuzzywuzzy import fuzz
 
 def celsius_to_fahrenheit(celsius: float) -> float:
     """Convert Celsius to Fahrenheit"""
@@ -19,6 +20,16 @@ def process_forecast_data(forecast_data: Dict) -> pd.DataFrame:
         })
     return pd.DataFrame(forecasts)
 
+def search_cities(query: str, min_score: int = 60) -> List[str]:
+    """Search Israeli cities using fuzzy matching"""
+    matches = []
+    for city in ISRAELI_CITIES:
+        # Calculate fuzzy match score
+        score = fuzz.partial_ratio(query.lower(), city.lower())
+        if score >= min_score:
+            matches.append(city)
+    return sorted(matches)
+
 ISRAELI_CITIES = [
     "Jerusalem",
     "Tel Aviv",
@@ -29,7 +40,17 @@ ISRAELI_CITIES = [
     "Ashdod",
     "Ashkelon",
     "Herzliya",
-    "Rishon LeZion"
+    "Rishon LeZion",
+    "Petah Tikva",
+    "Bat Yam",
+    "Holon",
+    "Ramat Gan",
+    "Rehovot",
+    "Kfar Saba",
+    "Ra'anana",
+    "Nahariya",
+    "Lod",
+    "Modiin"
 ]
 
 WEATHER_ICONS = {

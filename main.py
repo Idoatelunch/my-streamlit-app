@@ -8,7 +8,8 @@ from utils import (
     celsius_to_fahrenheit,
     process_forecast_data,
     ISRAELI_CITIES,
-    WEATHER_ICONS
+    WEATHER_ICONS,
+    search_cities
 )
 from styles import apply_custom_styles
 
@@ -31,7 +32,27 @@ except ValueError as e:
 
 # Sidebar
 st.sidebar.title("Settings")
-selected_city = st.sidebar.selectbox("Select City", ISRAELI_CITIES)
+
+# City search with autocomplete
+city_search = st.sidebar.text_input("Search City", "")
+if city_search:
+    matching_cities = search_cities(city_search)
+    if matching_cities:
+        selected_city = st.sidebar.selectbox(
+            "Select City",
+            matching_cities,
+            key="city_selector"
+        )
+    else:
+        st.sidebar.warning("No matching cities found")
+        selected_city = "Jerusalem"  # Default to Jerusalem if no matches
+else:
+    selected_city = st.sidebar.selectbox(
+        "Select City",
+        ISRAELI_CITIES,
+        key="city_selector"
+    )
+
 use_celsius = st.sidebar.radio("Temperature Unit", ["Celsius", "Fahrenheit"]) == "Celsius"
 
 # Main content
@@ -41,22 +62,22 @@ try:
     # Current weather
     with st.spinner("Fetching current weather..."):
         current_weather = weather_api.get_current_weather(selected_city)
-        
+
     # Display current weather
     col1, col2, col3 = st.columns(3)
-    
+
     temp = current_weather['main']['temp']
     if not use_celsius:
         temp = celsius_to_fahrenheit(temp)
-    
+
     with col1:
         st.markdown("### Temperature")
         st.markdown(f"### {temp:.1f}°{'C' if use_celsius else 'F'}")
-        
+
     with col2:
         st.markdown("### Humidity")
         st.markdown(f"### {current_weather['main']['humidity']}%")
-        
+
     with col3:
         st.markdown("### Conditions")
         icon = current_weather['weather'][0]['icon']
@@ -67,7 +88,7 @@ try:
     with st.spinner("Fetching forecast data..."):
         forecast_data = weather_api.get_forecast(selected_city)
         df = process_forecast_data(forecast_data)
-        
+
     if not use_celsius:
         df['temperature'] = df['temperature'].apply(celsius_to_fahrenheit)
 
@@ -91,7 +112,7 @@ try:
     # Daily forecast cards
     st.markdown("### Daily Details")
     daily_forecast = df.set_index('datetime').resample('D').mean().reset_index()
-    
+
     for _, row in daily_forecast.iterrows():
         with st.container():
             st.markdown(f"""

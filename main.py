@@ -16,14 +16,16 @@ from comparison_dashboard import show_comparison_dashboard
 from wind_visualization import create_wind_overlay, get_city_coordinates # Added import
 
 def main():
-    # Page configuration
-    st.set_page_config(
-        page_title="Israel Weather App",
-        page_icon="🌤️",
-        layout="wide"
-    )
+    # Only set page config if this file is run directly (not imported)
+    if 'page_config_done' not in st.session_state:
+        st.set_page_config(
+            page_title="Israel Weather App",
+            page_icon="🌤️",
+            layout="wide"
+        )
+        st.session_state.page_config_done = True
 
-# Apply custom styles
+    # Apply custom styles
 apply_custom_styles()
 
 # Navigation

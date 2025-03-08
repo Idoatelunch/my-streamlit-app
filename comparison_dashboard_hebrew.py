@@ -14,6 +14,37 @@ from hebrew_translations import translations
 def show_comparison_dashboard():
     st.title(f"{translations['multi_city_comparison']} 📊")
     
+    # Hebrew city translations
+    city_translations = {
+        "Jerusalem": "ירושלים",
+        "Tel Aviv": "תל אביב",
+        "Haifa": "חיפה",
+        "Rishon LeZion": "ראשון לציון",
+        "Petah Tikva": "פתח תקווה",
+        "Ashdod": "אשדוד",
+        "Netanya": "נתניה",
+        "Be'er Sheva": "באר שבע",
+        "Beer Sheva": "באר שבע",
+        "Holon": "חולון",
+        "Ramat Gan": "רמת גן",
+        "Herzliya": "הרצליה",
+        "Rehovot": "רחובות",
+        "Bat Yam": "בת ים",
+        "Ashkelon": "אשקלון",
+        "Kfar Saba": "כפר סבא",
+        "Ra'anana": "רעננה",
+        "Modiin": "מודיעין",
+        "Nahariya": "נהריה",
+        "Lod": "לוד",
+        "Givatayim": "גבעתיים",
+        "Eilat": "אילת",
+        "Nazareth": "נצרת",
+        "Tiberias": "טבריה",
+        "Safed": "צפת",
+        "Acre": "עכו",
+        "Hadera": "חדרה"
+    }
+    
     # Get selected cities
     if 'comparison_cities' not in st.session_state:
         st.session_state.comparison_cities = ["ירושלים", "תל אביב", "חיפה"]  # Default cities
@@ -21,9 +52,17 @@ def show_comparison_dashboard():
     # City selection
     st.sidebar.markdown(f"## 🌍 {translations['select_cities_to_compare']}")
     
+    # Create list of Hebrew city names
+    hebrew_cities = []
+    for city in ISRAELI_CITIES:
+        if city in city_translations:
+            hebrew_cities.append(city_translations[city])
+        else:
+            hebrew_cities.append(city)
+    
     # Add/Remove cities
     new_city = st.sidebar.selectbox(translations['add_city_to_compare'], 
-        [city for city in ISRAELI_CITIES if city not in st.session_state.comparison_cities],
+        [city for city in hebrew_cities if city not in st.session_state.comparison_cities],
         key="new_city_selector"
     )
     

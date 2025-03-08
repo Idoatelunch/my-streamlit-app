@@ -60,23 +60,76 @@ def main():
         else:
             st.sidebar.info(translations["no_favorites"])
 
+        # Hebrew city translations
+        city_translations = {
+            "Jerusalem": "ירושלים",
+            "Tel Aviv": "תל אביב",
+            "Haifa": "חיפה",
+            "Rishon LeZion": "ראשון לציון",
+            "Petah Tikva": "פתח תקווה",
+            "Ashdod": "אשדוד",
+            "Netanya": "נתניה",
+            "Be'er Sheva": "באר שבע",
+            "Beer Sheva": "באר שבע",
+            "Holon": "חולון",
+            "Ramat Gan": "רמת גן",
+            "Herzliya": "הרצליה",
+            "Rehovot": "רחובות",
+            "Bat Yam": "בת ים",
+            "Ashkelon": "אשקלון",
+            "Kfar Saba": "כפר סבא",
+            "Ra'anana": "רעננה",
+            "Modiin": "מודיעין",
+            "Nahariya": "נהריה",
+            "Lod": "לוד",
+            "Givatayim": "גבעתיים",
+            "Eilat": "אילת",
+            "Nazareth": "נצרת",
+            "Tiberias": "טבריה",
+            "Safed": "צפת",
+            "Acre": "עכו",
+            "Hadera": "חדרה"
+        }
+        
+        # Create list of Hebrew city names
+        hebrew_cities = []
+        english_to_hebrew = {}
+        hebrew_to_english = {}
+        
+        for city in ISRAELI_CITIES:
+            if city in city_translations:
+                hebrew_cities.append(city_translations[city])
+                english_to_hebrew[city] = city_translations[city]
+                hebrew_to_english[city_translations[city]] = city
+            else:
+                hebrew_cities.append(city)
+        
         # City search with autocomplete
         city_search = st.sidebar.text_input(f"🔍 {translations['search_city']}", "")
         if city_search:
             matching_cities = search_cities(city_search)
-            if matching_cities:
-                selected_city = st.sidebar.selectbox(
+            matching_hebrew = []
+            
+            for city in matching_cities:
+                if city in english_to_hebrew:
+                    matching_hebrew.append(english_to_hebrew[city])
+                else:
+                    matching_hebrew.append(city)
+                    
+            if matching_hebrew:
+                selected_hebrew = st.sidebar.selectbox(
                     translations["select_city"],
-                    matching_cities,
+                    matching_hebrew,
                     key="city_selector"
                 )
+                selected_city = selected_hebrew
             else:
                 st.sidebar.warning(translations["no_matching_cities"])
                 selected_city = "ירושלים"  # Default to Jerusalem if no matches
         else:
             selected_city = st.sidebar.selectbox(
                 translations["select_city"],
-                ISRAELI_CITIES,
+                hebrew_cities,
                 key="city_selector"
             )
 

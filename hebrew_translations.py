@@ -14,6 +14,28 @@ translations = {
     'error_fetching_weather': 'שגיאה בטעינת נתוני מזג האוויר',
     'temperature_unit': 'יחידת טמפרטורה',
     
+    # Navigation and UI
+    'navigation': 'ניווט',
+    'select_view': 'בחר תצוגה',
+    'single_city_weather': 'מזג אוויר בעיר בודדת',
+    'city_comparison': 'השוואת ערים',
+    'settings': 'הגדרות',
+    'favorite_cities': 'ערים מועדפות',
+    'select_from_favorites': 'בחר מהמועדפים',
+    'no_favorites': 'אין ערים מועדפות עדיין. הוסף ערים למועדפים שלך.',
+    'search_city': 'חפש עיר',
+    'select_city': 'בחר עיר',
+    'no_matching_cities': 'לא נמצאו ערים תואמות',
+    'selected': 'נבחר',
+    'weather_in': 'מזג האוויר ב',
+    'israel': 'ישראל',
+    'fetching_current_weather': 'מביא נתוני מזג אוויר נוכחיים...',
+    'real_time_wind': 'רוח בזמן אמת',
+    'five_day_forecast': 'תחזית לחמשת הימים הקרובים',
+    'fetching_forecast_data': 'מביא נתוני תחזית...',
+    'temperature_trend': 'מגמת טמפרטורות',
+    'daily_details': 'פרטים יומיים',
+    
     # Dashboard related
     'multi_city_comparison': 'השוואת מזג אוויר בין ערים',
     'select_cities_to_compare': 'בחר ערים להשוואה',

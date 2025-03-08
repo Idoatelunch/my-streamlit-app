@@ -64,6 +64,12 @@ ISRAELI_CITIES = [
     "Nazareth",
     "Kiryat Motzkin",
     "Maalot-Tarshiha",
+    "Kiryat Yam",
+    "Migdal HaEmek",
+    "Yokneam Illit",
+    "Kiryat Tivon",
+    "Rosh Pina",
+    "Metula",
 
     # Central Region
     "Ramat HaSharon",
@@ -74,6 +80,12 @@ ISRAELI_CITIES = [
     "Ness Ziona",
     "Or Yehuda",
     "Ganei Tikva",
+    "Kiryat Ono",
+    "Shoham",
+    "Even Yehuda",
+    "Kadima-Zoran",
+    "Tel Mond",
+    "Kfar Yona",
 
     # Southern Cities
     "Eilat",
@@ -84,18 +96,48 @@ ISRAELI_CITIES = [
     "Kiryat Gat",
     "Yeroham",
     "Mitzpe Ramon",
+    "Netivot",
+    "Rahat",
+    "Yeruham",
+    "Kiryat Malakhi",
+    "Beer Yaakov",
+    "Kuseife",
 
     # Sharon Region
     "Hadera",
     "Pardes Hanna-Karkur",
     "Zichron Yaakov",
     "Or Akiva",
+    "Binyamina",
+    "Givat Ada",
+    "Karkur",
+    "Caesarea",
+    "Bat Hefer",
+    "Ein Iron",
 
     # Judea and Samaria
     "Maale Adumim",
     "Ariel",
     "Beitar Illit",
-    "Modiin Illit"
+    "Modiin Illit",
+    "Efrat",
+    "Kiryat Arba",
+    "Alfei Menashe",
+    "Oranit",
+    "Elkana",
+    "Karnei Shomron",
+
+    # Galilee Region
+    "Karmiel",
+    "Ma'alot-Tarshiha",
+    "Sakhnin",
+    "Tamra",
+    "Shfaram",
+    "Majd al-Krum",
+    "Maghar",
+    "Arraba",
+    "I'billin",
+    "Kafr Kanna"
 ]
 
 WEATHER_ICONS = {

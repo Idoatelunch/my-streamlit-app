@@ -16,13 +16,13 @@ def create_wind_overlay(city_data: List[Dict]):
     # Create figure with map
     fig = go.Figure()
 
-    # Add base map
+    # Add base map - use Hebrew city names if available
     fig.add_trace(go.Scattermapbox(
         lat=[data['lat'] for data in city_data],
         lon=[data['lon'] for data in city_data],
         mode='markers+text',
         marker=dict(size=10),
-        text=[data['city'] for data in city_data],
+        text=[data.get('hebrew_city', data['city']) for data in city_data],
         textposition="top center",
         name='Cities'
     ))

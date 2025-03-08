@@ -183,11 +183,46 @@ def main():
             # Add datetime back for display
             daily_means['datetime'] = pd.to_datetime(daily_means['date'])
             
+            # Hebrew day and month names
+            hebrew_days = {
+                'Monday': 'יום שני',
+                'Tuesday': 'יום שלישי',
+                'Wednesday': 'יום רביעי',
+                'Thursday': 'יום חמישי',
+                'Friday': 'יום שישי',
+                'Saturday': 'יום שבת',
+                'Sunday': 'יום ראשון'
+            }
+            
+            hebrew_months = {
+                'January': 'ינואר',
+                'February': 'פברואר',
+                'March': 'מרץ',
+                'April': 'אפריל',
+                'May': 'מאי',
+                'June': 'יוני',
+                'July': 'יולי',
+                'August': 'אוגוסט',
+                'September': 'ספטמבר',
+                'October': 'אוקטובר',
+                'November': 'נובמבר',
+                'December': 'דצמבר'
+            }
+            
             for _, row in daily_means.iterrows():
+                # Get English format first
+                english_day = row['datetime'].strftime('%A')
+                english_month = row['datetime'].strftime('%B')
+                day_num = row['datetime'].strftime('%d')
+                
+                # Convert to Hebrew
+                hebrew_day = hebrew_days.get(english_day, english_day)
+                hebrew_month = hebrew_months.get(english_month, english_month)
+                
                 with st.container():
                     st.markdown(f"""
                         <div class="weather-card">
-                            <h4>{row['datetime'].strftime('%A, %B %d')}</h4>
+                            <h4>{hebrew_day}, {hebrew_month} {day_num}</h4>
                             <p>{translations['temperature']}: {row['temperature']:.1f}°{'C' if use_celsius else 'F'}</p>
                             <p>{translations['humidity']}: {row['humidity']:.0f}%</p>
                         </div>

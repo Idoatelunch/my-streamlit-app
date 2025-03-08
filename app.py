@@ -55,22 +55,15 @@ else:
     </style>
     """, unsafe_allow_html=True)
 
-    # Language selection screen
-    st.markdown('<div class="centered">', unsafe_allow_html=True)
-
-    st.title("Weather App / אפליקציית מזג אוויר 🌤️")
-    st.subheader("Please select your language / בחר את השפה שלך")
-
-    st.markdown('<div class="btn-container">', unsafe_allow_html=True)
-
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("English"):
-            st.query_params["app"] = "english"
-            st.rerun()
-    with col2:
-        if st.button("עברית"):
-            st.query_params["app"] = "hebrew"
-            st.rerun()
-
-    st.markdown('</div></div>', unsafe_allow_html=True)
+    # App content
+    st.markdown("""
+    <div class="centered">
+        <h1>Welcome to the Israel Weather App</h1>
+        <h1>ברוכים הבאים לאפליקציית מזג האוויר בישראל</h1>
+        <p>Choose your preferred language / בחר את השפה המועדפת עליך</p>
+        <div class="btn-container">
+            <a href="?app=english" target="_self" class="language-btn">English 🇬🇧</a>
+            <a href="?app=hebrew" target="_self" class="language-btn">עברית 🇮🇱</a>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)

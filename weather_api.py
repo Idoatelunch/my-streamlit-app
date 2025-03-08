@@ -1,91 +1,107 @@
 import requests
 import os
 from typing import Dict, List, Optional
-import json
+from datetime import datetime, timedelta
 
 class WeatherAPI:
     def __init__(self):
         # Get API key from environment
-        self.api_key = os.getenv("OPENWEATHER_API_KEY")
+        self.api_key = os.getenv("WEATHERAPI_KEY")
         if not self.api_key:
-            raise ValueError("OpenWeatherMap API key not found in environment variables")
+            raise ValueError("WeatherAPI.com key not found in environment variables")
 
-        self.base_url = "https://api.openweathermap.org/data/2.5"
-        # Validate API key on initialization
-        self._validate_api_key()
-
-    def _validate_api_key(self):
-        """Validate the API key with a test request"""
-        try:
-            response = requests.get(
-                f"{self.base_url}/weather",
-                params={
-                    "q": "Jerusalem,IL",
-                    "appid": self.api_key,
-                    "units": "metric"
-                },
-                timeout=10
-            )
-
-            if response.status_code == 401:
-                try:
-                    error_data = response.json()
-                    error_msg = error_data.get('message', 'Unknown error')
-                    if 'Invalid API key' in error_msg:
-                        raise ValueError(
-                            "Invalid API key. Please ensure:\n"
-                            "1. The key is copied correctly without spaces\n"
-                            "2. The key is activated (takes ~2 hours after creation)\n"
-                            "3. The key matches the one in your OpenWeatherMap dashboard"
-                        )
-                except json.JSONDecodeError:
-                    raise ValueError("Invalid API key. Please check your OpenWeatherMap API key")
-
-            response.raise_for_status()
-
-        except requests.exceptions.Timeout:
-            raise ValueError("Connection timed out. Please try again")
-        except requests.exceptions.RequestException as e:
-            if "401" in str(e):
-                raise ValueError(
-                    "API key authentication failed. Please verify your API key is correct and activated"
-                )
-            raise ValueError(f"Failed to validate API key: {str(e)}")
+        self.base_url = "http://api.weatherapi.com/v1"
 
     def get_current_weather(self, city: str) -> Dict:
         """Fetch current weather data for a city"""
         try:
             response = requests.get(
-                f"{self.base_url}/weather",
+                f"{self.base_url}/current.json",
                 params={
-                    "q": f"{city},IL",
-                    "appid": self.api_key,
-                    "units": "metric"
+                    "key": self.api_key,
+                    "q": f"{city},Israel",
+                    "aqi": "no"
                 },
                 timeout=10
             )
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            return self._format_current_weather(data)
         except requests.exceptions.RequestException as e:
-            if "401" in str(e):
-                raise ValueError("API key authentication failed. Please check your OpenWeatherMap API key")
             raise Exception(f"Failed to fetch current weather: {str(e)}")
 
     def get_forecast(self, city: str) -> Dict:
         """Fetch 5-day forecast data for a city"""
         try:
             response = requests.get(
-                f"{self.base_url}/forecast",
+                f"{self.base_url}/forecast.json",
                 params={
-                    "q": f"{city},IL",
-                    "appid": self.api_key,
-                    "units": "metric"
+                    "key": self.api_key,
+                    "q": f"{city},Israel",
+                    "days": 5,
+                    "aqi": "no"
                 },
                 timeout=10
             )
             response.raise_for_status()
-            return response.json()
+            return self._format_forecast_data(response.json())
         except requests.exceptions.RequestException as e:
-            if "401" in str(e):
-                raise ValueError("API key authentication failed. Please check your OpenWeatherMap API key")
             raise Exception(f"Failed to fetch forecast: {str(e)}")
+
+    def _format_current_weather(self, data: Dict) -> Dict:
+        """Format WeatherAPI.com current weather data to match our app's structure"""
+        current = data.get('current', {})
+        condition = current.get('condition', {})
+
+        return {
+            'main': {
+                'temp': current.get('temp_c', 0),
+                'humidity': current.get('humidity', 0)
+            },
+            'weather': [{
+                'description': condition.get('text', 'Unknown'),
+                'icon': self._get_weather_icon(condition.get('code', 1000))
+            }]
+        }
+
+    def _format_forecast_data(self, data: Dict) -> Dict:
+        """Format WeatherAPI.com forecast data to match our app's structure"""
+        forecast_days = data.get('forecast', {}).get('forecastday', [])
+        forecast_list = []
+
+        for day in forecast_days:
+            day_data = day.get('day', {})
+            condition = day_data.get('condition', {})
+
+            forecast_list.append({
+                'dt': int(datetime.strptime(day['date'], '%Y-%m-%d').timestamp()),
+                'main': {
+                    'temp': day_data.get('avgtemp_c', 0),
+                    'humidity': day_data.get('avghumidity', 0)
+                },
+                'weather': [{
+                    'description': condition.get('text', 'Unknown'),
+                    'icon': self._get_weather_icon(condition.get('code', 1000))
+                }]
+            })
+
+        return {'list': forecast_list}
+
+    def _get_weather_icon(self, code: int) -> str:
+        """Convert WeatherAPI.com weather codes to our icon codes"""
+        # Mapping WeatherAPI.com codes to our icon set
+        code_map = {
+            1000: "01d",  # Clear
+            1003: "02d",  # Partly cloudy
+            1006: "03d",  # Cloudy
+            1009: "04d",  # Overcast
+            1030: "50d",  # Mist
+            1063: "09d",  # Patchy rain
+            1186: "10d",  # Moderate rain
+            1189: "10d",  # Moderate rain
+            1192: "11d",  # Heavy rain
+            1195: "11d",  # Heavy rain
+            1273: "11d",  # Patchy light rain with thunder
+            1276: "11d",  # Moderate or heavy rain with thunder
+        }
+        return code_map.get(code, "01d")  # Default to clear sky if code not found

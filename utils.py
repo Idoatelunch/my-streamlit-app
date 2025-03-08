@@ -31,26 +31,71 @@ def search_cities(query: str, min_score: int = 60) -> List[str]:
     return sorted(matches)
 
 ISRAELI_CITIES = [
+    # Major Cities
     "Jerusalem",
     "Tel Aviv",
     "Haifa",
-    "Eilat",
-    "Be'er Sheva",
-    "Netanya",
-    "Ashdod",
-    "Ashkelon",
-    "Herzliya",
     "Rishon LeZion",
     "Petah Tikva",
-    "Bat Yam",
+    "Ashdod",
+    "Netanya",
+    "Be'er Sheva",
     "Holon",
     "Ramat Gan",
+
+    # Regional Centers
+    "Herzliya",
     "Rehovot",
+    "Bat Yam",
+    "Ashkelon",
     "Kfar Saba",
     "Ra'anana",
+    "Modiin",
     "Nahariya",
     "Lod",
-    "Modiin"
+    "Givatayim",
+
+    # Northern Cities
+    "Tiberias",
+    "Safed",
+    "Acre",
+    "Kiryat Shmona",
+    "Afula",
+    "Nazareth",
+    "Kiryat Motzkin",
+    "Maalot-Tarshiha",
+
+    # Central Region
+    "Ramat HaSharon",
+    "Hod HaSharon",
+    "Rosh HaAyin",
+    "Yavne",
+    "Ramla",
+    "Ness Ziona",
+    "Or Yehuda",
+    "Ganei Tikva",
+
+    # Southern Cities
+    "Eilat",
+    "Dimona",
+    "Arad",
+    "Sderot",
+    "Ofakim",
+    "Kiryat Gat",
+    "Yeroham",
+    "Mitzpe Ramon",
+
+    # Sharon Region
+    "Hadera",
+    "Pardes Hanna-Karkur",
+    "Zichron Yaakov",
+    "Or Akiva",
+
+    # Judea and Samaria
+    "Maale Adumim",
+    "Ariel",
+    "Beitar Illit",
+    "Modiin Illit"
 ]
 
 WEATHER_ICONS = {

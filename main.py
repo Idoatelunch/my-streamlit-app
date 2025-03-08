@@ -19,7 +19,7 @@ def main():
     # Page config is now set in app.py
     
     # Apply custom styles
-apply_custom_styles()
+    apply_custom_styles()
 
 # Navigation
 st.sidebar.title("Navigation")

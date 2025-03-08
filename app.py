@@ -55,7 +55,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Get the query parameter
-query_params = st.experimental_get_query_params()
+query_params = st.query_params
 app_version = query_params.get("app", [""])[0]
 
 # Launch the selected app

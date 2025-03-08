@@ -1,7 +1,14 @@
 
 import streamlit as st
 
-# Get the query parameter first before any other Streamlit command
+# Always set page config first before any other Streamlit commands
+st.set_page_config(
+    page_title="Weather App / אפליקציית מזג אוויר",
+    page_icon="🌤️",
+    layout="wide"
+)
+
+# Get the query parameter
 query_params = st.query_params
 app_version = query_params.get("app", "")
 
@@ -15,12 +22,6 @@ if app_version in ["english", "hebrew"]:
         import main_hebrew as m
         m.main()
 else:
-    # Page configuration - only set it once here for the language selector
-    st.set_page_config(
-        page_title="Weather App / אפליקציית מזג אוויר",
-        page_icon="🌤️",
-        layout="wide"
-    )
 
     # Center content
     st.markdown("""

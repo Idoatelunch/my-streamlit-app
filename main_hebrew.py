@@ -18,16 +18,8 @@ from wind_visualization import create_wind_overlay, get_city_coordinates
 from hebrew_translations import translations
 
 def main():
-    # Only set page config if this file is run directly (not imported)
-    if 'page_config_done' not in st.session_state:
-        st.set_page_config(
-            page_title="אפליקציית מזג אוויר בישראל",
-            page_icon="🌤️",
-            layout="wide",
-            initial_sidebar_state="expanded"
-        )
-        st.session_state.page_config_done = True
-        
+    # Page config is now set in app.py
+    
     # Apply custom styles
     apply_custom_styles()
 

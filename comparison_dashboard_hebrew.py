@@ -58,6 +58,9 @@ def show_comparison_dashboard():
         if city in city_translations:
             hebrew_cities.append(city_translations[city])
         else:
+            hebrew_cities.append(city)f city in city_translations:
+            hebrew_cities.append(city_translations[city])
+        else:
             hebrew_cities.append(city)
     
     # Add/Remove cities
@@ -75,7 +78,9 @@ def show_comparison_dashboard():
     for city in st.session_state.comparison_cities:
         col1, col2 = st.sidebar.columns([3, 1])
         col1.write(city)
-        if col2.button("❌", key=f"remove_{city}") and len(st.session_state.comparison_cities) > 2:
+        if col2.button(f"❌", key=f"remove_{city}"):
+            st.session_state.comparison_cities.remove(city)
+            st.rerun() col2.button("❌", key=f"remove_{city}") and len(st.session_state.comparison_cities) > 2:
             st.session_state.comparison_cities.remove(city)
             st.rerun()
 

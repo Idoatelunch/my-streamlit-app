@@ -177,9 +177,17 @@ if page == "Single City Weather":
 
         # Daily forecast cards
         st.markdown("### Daily Details")
-        daily_forecast = df.set_index('datetime').resample('D').mean().reset_index()
-
-        for _, row in daily_forecast.iterrows():
+        
+        # Group by day and calculate numeric column means
+        numeric_cols = ['temperature', 'humidity']
+        daily_forecast = df.copy()
+        daily_forecast['date'] = daily_forecast['datetime'].dt.date
+        daily_means = daily_forecast.groupby('date')[numeric_cols].mean().reset_index()
+        
+        # Add datetime back for display
+        daily_means['datetime'] = pd.to_datetime(daily_means['date'])
+        
+        for _, row in daily_means.iterrows():
             with st.container():
                 st.markdown(f"""
                     <div class="weather-card">

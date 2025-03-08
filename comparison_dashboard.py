@@ -59,8 +59,10 @@ def show_comparison_dashboard():
             
             weather_data.append({
                 'City': city,
-                'Temperature': f"{temp:.1f}°{'C' if use_celsius else 'F'}",
-                'Humidity': f"{current['main']['humidity']}%",
+                'Temperature': temp,  # Store numeric values
+                'TemperatureDisplay': f"{temp:.1f}°{'C' if use_celsius else 'F'}",  # For display only
+                'Humidity': current['main']['humidity'],  # Store numeric values
+                'HumidityDisplay': f"{current['main']['humidity']}%",  # For display only
                 'Conditions': f"{WEATHER_ICONS.get(current['weather'][0]['icon'], '❓')} {current['weather'][0]['description']}"
             })
         

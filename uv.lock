@@ -948,6 +948,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "fuzzywuzzy" },
+    { name = "numpy" },
     { name = "pandas" },
     { name = "plotly" },
     { name = "python-levenshtein" },
@@ -959,6 +960,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "fuzzywuzzy", specifier = ">=0.18.0" },
+    { name = "numpy", specifier = ">=2.2.3" },
     { name = "pandas", specifier = ">=2.2.3" },
     { name = "plotly", specifier = ">=6.0.0" },
     { name = "python-levenshtein", specifier = ">=0.27.1" },

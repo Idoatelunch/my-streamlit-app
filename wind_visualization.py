@@ -32,10 +32,14 @@ def create_wind_overlay(city_data: List[Dict]):
     for i in range(8):  # 8 frames for smooth animation
         arrow_traces = []
         for city in city_data:
+            # Check if all required wind data is present
+            if 'wind_speed' not in city or 'wind_degree' not in city:
+                continue  # Skip this city if wind data is incomplete
+                
             # Calculate arrow endpoint using wind direction and speed
-            wind_degree = city.get('wind_degree', 0)  # Default to 0 if missing
+            wind_degree = city['wind_degree']
             angle = np.radians(wind_degree)
-            wind_speed = city.get('wind_speed', 0)  # Try to get wind_speed
+            wind_speed = city['wind_speed']
             speed_factor = wind_speed / 50.0  # Normalize arrow length
             
             # Calculate arrow endpoint

@@ -3,7 +3,6 @@ import plotly.express as px
 from datetime import datetime
 import pandas as pd
 import json
-
 from weather_api import WeatherAPI
 from utils import (
     celsius_to_fahrenheit,
@@ -13,8 +12,9 @@ from utils import (
     search_cities
 )
 from styles import apply_custom_styles
-# Added import for comparison dashboard
 from comparison_dashboard import show_comparison_dashboard
+from wind_visualization import create_wind_overlay, get_city_coordinates # Added import
+
 
 # Page configuration
 st.set_page_config(
@@ -130,6 +130,23 @@ if page == "Single City Weather":
             st.markdown("### Conditions")
             icon = current_weather['weather'][0]['icon']
             st.markdown(f"### {WEATHER_ICONS.get(icon, '❓')} {current_weather['weather'][0]['description'].capitalize()}")
+
+        # Wind Visualization
+        st.markdown("## Real-time Wind Conditions 🌬️")
+        city_coords = get_city_coordinates()
+
+        # Update wind data for visualization
+        for city_data in city_coords:
+            if city_data['city'] == selected_city:
+                city_data['wind_speed'] = current_weather['wind']['speed']
+                city_data['wind_degree'] = current_weather['wind']['deg']
+                city_data['wind_direction'] = current_weather['wind']['direction']
+                break
+
+        # Create and display wind visualization
+        wind_fig = create_wind_overlay(city_coords)
+        st.plotly_chart(wind_fig, use_container_width=True)
+
 
         # Forecast
         st.markdown("## 5-Day Forecast")

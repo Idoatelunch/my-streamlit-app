@@ -61,7 +61,12 @@ class WeatherAPI:
             'weather': [{
                 'description': condition.get('text', 'Unknown'),
                 'icon': self._get_weather_icon(condition.get('code', 1000))
-            }]
+            }],
+            'wind': {
+                'speed': current.get('wind_kph', 0),
+                'degree': current.get('wind_degree', 0),
+                'direction': current.get('wind_dir', 'N')
+            }
         }
 
     def _format_forecast_data(self, data: Dict) -> Dict:
@@ -72,6 +77,17 @@ class WeatherAPI:
         for day in forecast_days:
             day_data = day.get('day', {})
             condition = day_data.get('condition', {})
+            hour_data = day.get('hour', [])
+
+            # Get hourly wind data
+            wind_data = []
+            for hour in hour_data:
+                wind_data.append({
+                    'time': hour.get('time'),
+                    'wind_kph': hour.get('wind_kph', 0),
+                    'wind_degree': hour.get('wind_degree', 0),
+                    'wind_dir': hour.get('wind_dir', 'N')
+                })
 
             forecast_list.append({
                 'dt': int(datetime.strptime(day['date'], '%Y-%m-%d').timestamp()),
@@ -82,7 +98,8 @@ class WeatherAPI:
                 'weather': [{
                     'description': condition.get('text', 'Unknown'),
                     'icon': self._get_weather_icon(condition.get('code', 1000))
-                }]
+                }],
+                'wind_data': wind_data
             })
 
         return {'list': forecast_list}

@@ -138,9 +138,9 @@ if page == "Single City Weather":
         # Update wind data for visualization
         for city_data in city_coords:
             if city_data['city'] == selected_city:
-                city_data['wind_speed'] = current_weather['wind'].get('speed', 0)
-                city_data['wind_degree'] = current_weather['wind'].get('deg', 0)
-                city_data['wind_direction'] = current_weather['wind'].get('direction', 'N')
+                city_data['wind_speed'] = current_weather['wind']['speed']
+                city_data['wind_degree'] = current_weather['wind']['deg']
+                city_data['wind_direction'] = current_weather['wind']['direction']
                 break
 
         # Create and display wind visualization

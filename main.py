@@ -15,13 +15,13 @@ from styles import apply_custom_styles
 from comparison_dashboard import show_comparison_dashboard
 from wind_visualization import create_wind_overlay, get_city_coordinates # Added import
 
-
-# Page configuration
-st.set_page_config(
-    page_title="Israel Weather App",
-    page_icon="🌤️",
-    layout="wide"
-)
+def main():
+    # Page configuration
+    st.set_page_config(
+        page_title="Israel Weather App",
+        page_icon="🌤️",
+        layout="wide"
+    )
 
 # Apply custom styles
 apply_custom_styles()
@@ -203,3 +203,6 @@ if page == "Single City Weather":
 else:
     # Show comparison dashboard
     show_comparison_dashboard()
+
+if __name__ == "__main__":
+    main()

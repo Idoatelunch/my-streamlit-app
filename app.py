@@ -56,10 +56,12 @@ st.markdown("""
 
 # Get the query parameter
 query_params = st.query_params
-app_version = query_params.get("app", [""])[0]
+app_version = query_params.get("app", "")
 
 # Launch the selected app
 if app_version == "english":
-    import main
+    import main as m
+    m.main()
 elif app_version == "hebrew":
-    import main_hebrew
+    import main_hebrew as m
+    m.main()

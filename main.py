@@ -2,6 +2,7 @@ import streamlit as st
 import plotly.express as px
 from datetime import datetime
 import pandas as pd
+import json
 
 from weather_api import WeatherAPI
 from utils import (
@@ -30,11 +31,33 @@ except ValueError as e:
     st.error(str(e))
     st.stop()
 
+# Initialize favorites in session state
+if 'favorites' not in st.session_state:
+    # Try to load favorites from local storage
+    favorites_json = st.session_state.get('_favorites_json', '[]')
+    try:
+        st.session_state.favorites = set(json.loads(favorites_json))
+    except json.JSONDecodeError:
+        st.session_state.favorites = set()
+
 # Sidebar
 st.sidebar.title("Settings")
 
+# Favorites section
+st.sidebar.markdown("## ⭐ Favorite Cities")
+if st.session_state.favorites:
+    selected_favorite = st.sidebar.selectbox(
+        "Select from Favorites",
+        sorted(list(st.session_state.favorites)),
+        key="favorite_selector"
+    )
+    if selected_favorite:
+        selected_city = selected_favorite
+else:
+    st.sidebar.info("No favorite cities yet. Add some cities to your favorites!")
+
 # City search with autocomplete
-city_search = st.sidebar.text_input("Search City", "")
+city_search = st.sidebar.text_input("🔍 Search City", "")
 if city_search:
     matching_cities = search_cities(city_search)
     if matching_cities:
@@ -52,6 +75,24 @@ else:
         ISRAELI_CITIES,
         key="city_selector"
     )
+
+# Favorite toggle button
+col1, col2 = st.sidebar.columns([3, 1])
+with col1:
+    st.write(f"Selected: {selected_city}")
+with col2:
+    if selected_city in st.session_state.favorites:
+        if st.button("❤️", key=f"unfav_{selected_city}"):
+            st.session_state.favorites.remove(selected_city)
+            # Save to local storage
+            st.session_state['_favorites_json'] = json.dumps(list(st.session_state.favorites))
+            st.rerun()
+    else:
+        if st.button("🤍", key=f"fav_{selected_city}"):
+            st.session_state.favorites.add(selected_city)
+            # Save to local storage
+            st.session_state['_favorites_json'] = json.dumps(list(st.session_state.favorites))
+            st.rerun()
 
 use_celsius = st.sidebar.radio("Temperature Unit", ["Celsius", "Fahrenheit"]) == "Celsius"
 

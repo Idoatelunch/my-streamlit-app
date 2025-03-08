@@ -24,5 +24,15 @@ def apply_custom_styles():
             font-size: 1.5rem;
             font-weight: bold;
         }
+        /* Favorite button styles */
+        .stButton>button:hover {
+            background-color: #f0f2f6;
+        }
+        .favorites-section {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+        }
         </style>
     """, unsafe_allow_html=True)

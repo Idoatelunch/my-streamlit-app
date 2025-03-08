@@ -6,8 +6,9 @@ class WeatherAPI:
 
     def __init__(self):
         self.base_url = "https://api.openweathermap.org/data/2.5"
-        # Use a demo API key for development/testing that doesn't require signup
-        self.api_key = "b6907d289e10d714a6e88b30761fae22"
+        # For demo purposes - we'll use mock data since the demo API key is expired
+        self.use_mock_data = True
+        self.api_key = "your-api-key-here"  # Replace with actual API key if needed
 
         # Hebrew city translations
         self.hebrew_to_english = {
@@ -46,9 +47,11 @@ class WeatherAPI:
             query_city = self.hebrew_to_english[city]
         else:
             query_city = city
-
-        # Since we're using a demo API key with limited access, 
-        # we'll use a specified endpoint that works with the demo key
+        
+        if self.use_mock_data:
+            return self._get_mock_current_weather(query_city)
+            
+        # For actual API use when you have a valid key
         url = f"{self.base_url}/weather"
         params = {
             "q": f"{query_city},IL",
@@ -66,6 +69,67 @@ class WeatherAPI:
             data['wind']['direction'] = self.get_wind_direction(data['wind']['deg'])
 
         return data
+        
+    def _get_mock_current_weather(self, city: str) -> Dict:
+        """Provide mock weather data for demonstration"""
+        import random
+        from datetime import datetime
+        
+        # Create realistic mock data
+        temp = round(random.uniform(15, 35), 1)
+        humidity = random.randint(30, 80)
+        wind_speed = round(random.uniform(1, 10), 1)
+        wind_deg = random.randint(0, 359)
+        
+        # Weather conditions based on temperature
+        if temp > 30:
+            condition = "clear sky"
+            icon = "01d"
+        elif temp > 25:
+            condition = "few clouds"
+            icon = "02d"
+        elif temp > 20:
+            condition = "scattered clouds"
+            icon = "03d"
+        elif temp > 15:
+            condition = "broken clouds"
+            icon = "04d"
+        else:
+            condition = "light rain"
+            icon = "10d"
+            
+        return {
+            "coord": {"lon": 35.21, "lat": 31.77},
+            "weather": [{"id": 800, "main": "Clear", "description": condition, "icon": icon}],
+            "base": "stations",
+            "main": {
+                "temp": temp,
+                "feels_like": temp - 2,
+                "temp_min": temp - 3,
+                "temp_max": temp + 3,
+                "pressure": 1013,
+                "humidity": humidity
+            },
+            "visibility": 10000,
+            "wind": {
+                "speed": wind_speed,
+                "deg": wind_deg,
+                "direction": self.get_wind_direction(wind_deg)
+            },
+            "clouds": {"all": random.randint(0, 100)},
+            "dt": datetime.now().timestamp(),
+            "sys": {
+                "type": 1,
+                "id": 6854,
+                "country": "IL",
+                "sunrise": 1661834187,
+                "sunset": 1661882048
+            },
+            "timezone": 10800,
+            "id": 281184,
+            "name": city,
+            "cod": 200
+        }
 
     def get_forecast(self, city: str) -> Dict:
         """Get forecast for a city"""
@@ -74,6 +138,9 @@ class WeatherAPI:
             query_city = self.hebrew_to_english[city]
         else:
             query_city = city
+            
+        if self.use_mock_data:
+            return self._get_mock_forecast(query_city)
 
         url = f"{self.base_url}/forecast"
         params = {
@@ -86,6 +153,103 @@ class WeatherAPI:
             raise Exception(f"Failed to fetch forecast data for {city}: {response.text}")
 
         return response.json()
+        
+    def _get_mock_forecast(self, city: str) -> Dict:
+        """Provide mock forecast data for demonstration"""
+        import random
+        from datetime import datetime, timedelta
+        
+        # Base temperature for the city with some seasonal adjustment
+        current_month = datetime.now().month
+        is_summer = 4 <= current_month <= 10
+        base_temp = random.uniform(25, 33) if is_summer else random.uniform(10, 20)
+        
+        # Generate forecast data for the next 5 days
+        forecast_list = []
+        start_time = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        
+        for day in range(5):
+            # For each day, create 8 timestamps (every 3 hours)
+            for hour in [0, 3, 6, 9, 12, 15, 18, 21]:
+                current_time = start_time + timedelta(days=day, hours=hour)
+                
+                # Temperature varies by time of day
+                hour_adjustment = 0
+                if 6 <= hour < 12:
+                    hour_adjustment = 2  # Morning warming
+                elif 12 <= hour < 18:
+                    hour_adjustment = 4  # Afternoon peak
+                elif 18 <= hour < 21:
+                    hour_adjustment = 1  # Evening cooling
+                
+                # Add some random variation
+                temp = base_temp + hour_adjustment + random.uniform(-2, 2)
+                humidity = random.randint(30, 80)
+                
+                # Weather conditions based on temperature and time
+                if temp > 30:
+                    condition = "clear sky"
+                    icon = "01d" if 6 <= hour < 18 else "01n"
+                elif temp > 25:
+                    condition = "few clouds"
+                    icon = "02d" if 6 <= hour < 18 else "02n"
+                elif temp > 20:
+                    condition = "scattered clouds"
+                    icon = "03d" if 6 <= hour < 18 else "03n"
+                elif temp > 15:
+                    condition = "broken clouds"
+                    icon = "04d" if 6 <= hour < 18 else "04n"
+                else:
+                    condition = "light rain"
+                    icon = "10d" if 6 <= hour < 18 else "10n"
+                
+                forecast_list.append({
+                    "dt": int(current_time.timestamp()),
+                    "main": {
+                        "temp": temp,
+                        "feels_like": temp - 2,
+                        "temp_min": temp - 1,
+                        "temp_max": temp + 1,
+                        "pressure": 1013,
+                        "humidity": humidity,
+                        "sea_level": 1013,
+                        "grnd_level": 952
+                    },
+                    "weather": [
+                        {
+                            "id": 800 if temp > 25 else 801,
+                            "main": "Clear" if temp > 25 else "Clouds",
+                            "description": condition,
+                            "icon": icon
+                        }
+                    ],
+                    "clouds": {"all": random.randint(0, 100)},
+                    "wind": {
+                        "speed": random.uniform(1, 8),
+                        "deg": random.randint(0, 359)
+                    },
+                    "visibility": 10000,
+                    "pop": 0.2 if temp < 20 else 0,
+                    "sys": {"pod": "d" if 6 <= hour < 18 else "n"},
+                    "dt_txt": current_time.strftime("%Y-%m-%d %H:%M:%S")
+                })
+                
+        return {
+            "cod": "200",
+            "message": 0,
+            "cnt": len(forecast_list),
+            "list": forecast_list,
+            "city": {
+                "id": 281184,
+                "name": city,
+                "coord": {"lat": 31.77, "lon": 35.21},
+                "country": "IL",
+                "population": 1000000,
+                "timezone": 10800,
+                "sunrise": 1661834187,
+                "sunset": 1661882048
+            }
+        }
 
     def get_wind_direction(self, degrees: float) -> str:
         """Convert wind degrees to cardinal direction"""

@@ -134,7 +134,7 @@ def main():
 
             # Update wind data for visualization
             for city_data in city_coords:
-                if city_data['city'] == selected_city:
+                if city_data.get('hebrew_city') == selected_city or city_data['city'] == selected_city:
                     # Initialize wind properties
                     city_data['wind_speed'] = current_weather['wind']['speed']
                     city_data['wind_degree'] = current_weather['wind']['deg']

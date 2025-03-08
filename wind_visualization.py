@@ -93,12 +93,12 @@ def create_wind_overlay(city_data: List[Dict]):
 def get_city_coordinates():
     """Return hardcoded coordinates for major Israeli cities"""
     return [
-        {"city": "Jerusalem", "lat": 31.7683, "lon": 35.2137},
-        {"city": "Tel Aviv", "lat": 32.0853, "lon": 34.7818},
-        {"city": "Haifa", "lat": 32.7940, "lon": 34.9896},
-        {"city": "Beer Sheva", "lat": 31.2516, "lon": 34.7915},
-        {"city": "Eilat", "lat": 29.5577, "lon": 34.9519},
-        {"city": "Netanya", "lat": 32.3329, "lon": 34.8599},
-        {"city": "Nazareth", "lat": 32.7021, "lon": 35.2978},
-        {"city": "Ashdod", "lat": 31.8044, "lon": 34.6448}
+        {"city": "Jerusalem", "hebrew_city": "ירושלים", "lat": 31.7683, "lon": 35.2137},
+        {"city": "Tel Aviv", "hebrew_city": "תל אביב", "lat": 32.0853, "lon": 34.7818},
+        {"city": "Haifa", "hebrew_city": "חיפה", "lat": 32.7940, "lon": 34.9896},
+        {"city": "Beer Sheva", "hebrew_city": "באר שבע", "lat": 31.2516, "lon": 34.7915},
+        {"city": "Eilat", "hebrew_city": "אילת", "lat": 29.5577, "lon": 34.9519},
+        {"city": "Netanya", "hebrew_city": "נתניה", "lat": 32.3329, "lon": 34.8599},
+        {"city": "Nazareth", "hebrew_city": "נצרת", "lat": 32.7021, "lon": 35.2978},
+        {"city": "Ashdod", "hebrew_city": "אשדוד", "lat": 31.8044, "lon": 34.6448}
     ]

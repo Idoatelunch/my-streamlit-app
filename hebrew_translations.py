@@ -35,6 +35,10 @@ translations = {
     'fetching_forecast_data': 'מביא נתוני תחזית...',
     'temperature_trend': 'מגמת טמפרטורות',
     'daily_details': 'פרטים יומיים',
+    'wind_speed': 'מהירות הרוח',
+    'wind_direction': 'כיוון הרוח',
+    'language_selection': 'בחר שפה',
+    'please_select_language': 'בחר את השפה שלך',
     
     # Dashboard related
     'multi_city_comparison': 'השוואת מזג אוויר בין ערים',

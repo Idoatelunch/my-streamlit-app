@@ -126,22 +126,63 @@ if page == "Single City Weather":
             icon = current_weather['weather'][0]['icon']
             st.markdown(f"### {WEATHER_ICONS.get(icon, '❓')} {current_weather['weather'][0]['description'].capitalize()}")
 
-        # Wind Visualization
-        st.markdown("## Real-time Wind Conditions 🌬️")
+        # Real-time Wind and Precipitation AR Overlay
+        st.markdown("## 🌬️ Real-time Wind & Precipitation AR Overlay")
+        
+        # Get multiple cities for comprehensive AR visualization
         city_coords = get_city_coordinates()
-
-        # Update wind data for visualization
+        
+        # Enhance city data with weather information for AR overlay
+        enhanced_cities = []
         for city_data in city_coords:
-            if city_data['city'] == selected_city:
-                # Initialize wind properties directly
-                city_data['wind_speed'] = current_weather['wind']['speed']
-                city_data['wind_degree'] = current_weather['wind']['deg']
-                city_data['wind_direction'] = current_weather['wind']['direction']
-                break
-
-        # Create and display wind visualization
-        wind_fig = create_wind_overlay(city_coords)
-        st.plotly_chart(wind_fig, use_container_width=True)
+            try:
+                # Get weather data for each city
+                if city_data['city'] == selected_city:
+                    # Use already fetched data for selected city
+                    city_weather = current_weather
+                else:
+                    # Fetch weather for other cities
+                    city_weather = weather_api.get_current_weather(city_data['city'])
+                
+                # Add weather data to city coordinates
+                enhanced_city = city_data.copy()
+                enhanced_city['wind_speed'] = city_weather.get('wind', {}).get('speed', 0)
+                enhanced_city['wind_degree'] = city_weather.get('wind', {}).get('deg', 0)
+                enhanced_city['wind_direction'] = city_weather.get('wind', {}).get('direction', 'N')
+                enhanced_city['temperature'] = city_weather.get('main', {}).get('temp', 20)
+                enhanced_city['humidity'] = city_weather.get('main', {}).get('humidity', 50)
+                
+                # Add precipitation data (rain or snow)
+                precipitation = 0
+                if 'rain' in city_weather:
+                    precipitation = city_weather['rain'].get('1h', 0)
+                elif 'snow' in city_weather:
+                    precipitation = city_weather['snow'].get('1h', 0)
+                enhanced_city['precipitation'] = precipitation
+                
+                enhanced_cities.append(enhanced_city)
+                
+            except Exception as e:
+                # If we can't get weather for a city, skip it
+                continue
+        
+        if enhanced_cities:
+            # Create AR overlay with wind arrows and precipitation
+            wind_fig = create_wind_overlay(enhanced_cities)
+            st.plotly_chart(wind_fig, use_container_width=True, key="ar_overlay")
+            
+            # Add legend and instructions
+            st.markdown("""
+            **AR Overlay Legend:**
+            - 🔵 **Blue Circles**: City locations with weather data
+            - 🔴 **Red Arrows**: Real-time wind direction and speed
+            - 💧 **Blue Halos**: Precipitation intensity (when present)
+            - ▶ **Click 'Animate Wind'** to see live wind flow patterns
+            
+            *Arrow length indicates wind speed • Arrow direction shows wind flow*
+            """)
+        else:
+            st.warning("Unable to load weather data for AR visualization. Please try refreshing the page.")
 
 
         # Forecast

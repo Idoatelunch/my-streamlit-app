@@ -1,4 +1,3 @@
-
 import streamlit as st
 import plotly.express as px
 import pandas as pd
@@ -42,7 +41,19 @@ def show_comparison_dashboard():
         "Tiberias": "טבריה",
         "Safed": "צפת",
         "Acre": "עכו",
-        "Hadera": "חדרה"
+        "Hadera": "חדרה",
+        "Ashkelon": "אשקלון", # Adding more common cities
+        "Kiryat ShmONA": "קרית שמונה",
+        "Dimona": "דימונה",
+        "Ramat Hasharon": "רמפת השרון",
+        "Ofakim": "אופקים",
+        "Tzfat": "צפת",
+        "Jaffa": "יפו",
+        "Bnei Brak": "בני ברק",
+        "Moshav": "מושב",
+        "Kfar Yona": "כפר יונה",
+        "Kiryat Ata": "קרית אתא",
+        "Tirat Carmel": "טירת כרמל"
     }
     
     # Get selected cities

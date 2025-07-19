@@ -81,7 +81,10 @@ class WeatherAPI:
         wind_speed = round(random.uniform(1, 10), 1)
         wind_deg = random.randint(0, 359)
         
-        # Weather conditions based on temperature
+        # Weather conditions and precipitation based on temperature and randomness
+        precipitation_chance = random.random()
+        has_precipitation = precipitation_chance > 0.7  # 30% chance of precipitation
+        
         if temp > 30:
             condition = "clear sky"
             icon = "01d"
@@ -89,16 +92,29 @@ class WeatherAPI:
             condition = "few clouds"
             icon = "02d"
         elif temp > 20:
-            condition = "scattered clouds"
-            icon = "03d"
+            if has_precipitation:
+                condition = "light rain"
+                icon = "10d"
+            else:
+                condition = "scattered clouds"
+                icon = "03d"
         elif temp > 15:
-            condition = "broken clouds"
-            icon = "04d"
+            if has_precipitation:
+                condition = "moderate rain"
+                icon = "10d"
+            else:
+                condition = "broken clouds"
+                icon = "04d"
         else:
-            condition = "light rain"
-            icon = "10d"
-            
-        return {
+            if has_precipitation:
+                condition = "heavy rain"
+                icon = "10d"
+            else:
+                condition = "overcast clouds"
+                icon = "04d"
+        
+        # Create base weather data
+        weather_data = {
             "coord": {"lon": 35.21, "lat": 31.77},
             "weather": [{"id": 800, "main": "Clear", "description": condition, "icon": icon}],
             "base": "stations",
@@ -130,6 +146,17 @@ class WeatherAPI:
             "name": city,
             "cod": 200
         }
+        
+        # Add precipitation data if present
+        if has_precipitation:
+            if temp > 2:  # Rain
+                precipitation_amount = round(random.uniform(0.5, 5.0), 1)
+                weather_data["rain"] = {"1h": precipitation_amount}
+            else:  # Snow (rare in Israel but possible)
+                precipitation_amount = round(random.uniform(0.1, 2.0), 1)
+                weather_data["snow"] = {"1h": precipitation_amount}
+        
+        return weather_data
 
     def get_forecast(self, city: str) -> Dict:
         """Get forecast for a city"""

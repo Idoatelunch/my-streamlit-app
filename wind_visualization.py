@@ -60,21 +60,30 @@ def create_wind_overlay(city_data: List[Dict]):
         st.warning("No wind data available for visualization")
         return fig
 
-    # Add city markers
+    # Add city markers with temperature color coding
+    temperatures = [city.get('temperature', 20) for city in valid_cities]
     fig.add_trace(go.Scattermapbox(
         lat=[city['lat'] for city in valid_cities],
         lon=[city['lon'] for city in valid_cities],
         mode='markers+text',
         marker=dict(
-            size=15,
-            color='blue',
-            symbol='circle'
+            size=18,
+            color=temperatures,
+            colorscale='RdYlBu_r',  # Red for hot, blue for cold
+            cmin=0,
+            cmax=40,
+            symbol='circle',
+            colorbar=dict(
+                title="Temperature (°C)",
+                x=1.02,
+                len=0.7
+            )
         ),
         text=[city.get('hebrew_city', city['city']) for city in valid_cities],
         textposition="bottom center",
-        textfont=dict(size=12, color='black'),
+        textfont=dict(size=11, color='white'),
         name='Cities',
-        hovertemplate='<b>%{text}</b><br>Click to see details<extra></extra>'
+        hovertemplate='<b>%{text}</b><br>Temperature: %{marker.color:.1f}°C<br>Click for details<extra></extra>'
     ))
 
     # Add precipitation layer if available
@@ -225,9 +234,10 @@ def create_wind_overlay(city_data: List[Dict]):
         margin=dict(l=0, r=0, t=40, b=0),
         height=600,
         title={
-            'text': "Real-time Wind & Precipitation AR Overlay",
+            'text': "🌍 Real-time Weather AR Overlay - Israel",
             'x': 0.5,
-            'xanchor': 'center'
+            'xanchor': 'center',
+            'font': {'size': 16}
         }
     )
 

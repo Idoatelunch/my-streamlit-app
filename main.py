@@ -127,7 +127,12 @@ if page == "Single City Weather":
             st.markdown(f"### {WEATHER_ICONS.get(icon, '❓')} {current_weather['weather'][0]['description'].capitalize()}")
 
         # Real-time Wind and Precipitation AR Overlay
-        st.markdown("## 🌬️ Real-time Wind & Precipitation AR Overlay")
+        col_title, col_refresh = st.columns([3, 1])
+        with col_title:
+            st.markdown("## 🌬️ Real-time Wind & Precipitation AR Overlay")
+        with col_refresh:
+            if st.button("🔄 Refresh Data", help="Update AR overlay with latest weather data"):
+                st.rerun()
         
         # Get multiple cities for comprehensive AR visualization
         city_coords = get_city_coordinates()
@@ -171,16 +176,36 @@ if page == "Single City Weather":
             wind_fig = create_wind_overlay(enhanced_cities)
             st.plotly_chart(wind_fig, use_container_width=True, key="ar_overlay")
             
-            # Add legend and instructions
-            st.markdown("""
-            **AR Overlay Legend:**
-            - 🔵 **Blue Circles**: City locations with weather data
-            - 🔴 **Red Arrows**: Real-time wind direction and speed
-            - 💧 **Blue Halos**: Precipitation intensity (when present)
-            - ▶ **Click 'Animate Wind'** to see live wind flow patterns
+            # Enhanced AR info panel
+            col1, col2 = st.columns([2, 1])
             
-            *Arrow length indicates wind speed • Arrow direction shows wind flow*
-            """)
+            with col1:
+                st.markdown("""
+                **🌪️ AR Weather Overlay Controls:**
+                - 🔵 **Blue Circles**: City locations with live weather data
+                - 🔴 **Red Arrows**: Real-time wind vectors (direction & speed)
+                - 💧 **Blue Halos**: Active precipitation zones
+                - 🌬️ **Click 'Flow Animation'** to activate wind flow simulation
+                
+                *Arrow length = wind speed • Arrow direction = wind flow*
+                """)
+            
+            with col2:
+                # Real-time weather stats
+                st.markdown("**Live Weather Stats:**")
+                avg_wind = sum(city.get('wind_speed', 0) for city in enhanced_cities) / len(enhanced_cities)
+                active_precipitation = sum(1 for city in enhanced_cities if city.get('precipitation', 0) > 0)
+                st.metric("Avg Wind Speed", f"{avg_wind:.1f} km/h")
+                st.metric("Precipitation Zones", f"{active_precipitation} cities")
+                
+                # Weather intensity indicator
+                max_wind = max(city.get('wind_speed', 0) for city in enhanced_cities)
+                if max_wind > 15:
+                    st.warning("⚠️ High Wind Alert")
+                elif active_precipitation > 2:
+                    st.info("🌧️ Multiple Rain Zones")
+                else:
+                    st.success("🌤️ Stable Conditions")
         else:
             st.warning("Unable to load weather data for AR visualization. Please try refreshing the page.")
 

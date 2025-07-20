@@ -75,10 +75,13 @@ Preferred communication style: Simple, everyday language.
 ### Features
 - Temperature unit conversion (Celsius/Fahrenheit)
 - Real-time weather data with 5-day forecasts
-- Interactive wind direction visualization
-- Multi-city weather comparison
+- **Real-time Wind & Precipitation AR Overlay** with animated wind flow patterns
+- Interactive wind direction visualization with flowing arrows
+- Multi-city weather comparison dashboard
 - Favorites management system
 - Responsive design with custom styling
+- Precipitation intensity visualization (rain/snow halos)
+- Smooth wind animation controls
 
 ## Deployment Strategy
 
@@ -98,3 +101,14 @@ Preferred communication style: Simple, everyday language.
 - Lazy loading of weather data to minimize API calls
 - Caching strategies for frequently accessed city data
 - Optimized chart rendering for smooth interactions
+
+## Recent Changes
+
+### January 19, 2025 - Real-time Wind & Precipitation AR Overlay Implementation
+- ✅ Successfully implemented animated wind arrows showing real-time wind flow patterns
+- ✅ Fixed arrow direction calculations to show proper wind flow instead of spinning in place
+- ✅ Added precipitation overlay with blue halos for rain/snow visualization
+- ✅ Enhanced animation controls with intuitive "Flow Animation" button
+- ✅ Improved wind visualization with filled arrowheads for better visibility
+- ✅ Multi-city wind data integration for comprehensive AR experience
+- ✅ Resolved map rendering issues with proper arrow display

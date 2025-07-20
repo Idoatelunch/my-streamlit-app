@@ -11,34 +11,40 @@ ISRAEL_BOUNDS = {
     'lon': (34.2, 35.9)   # West to East
 }
 
-def create_wind_arrows(lat, lon, wind_speed, wind_direction_deg, color='red', scale=0.05):
+def create_wind_arrows(lat, lon, wind_speed, wind_direction_deg, color='red', scale=0.02):
     """Create arrow coordinates for wind visualization"""
-    # Convert wind direction to radians (wind direction is where wind is coming FROM)
-    # So we need to add 180 degrees to show where wind is going TO
-    direction_rad = np.radians((wind_direction_deg + 180) % 360)
+    # Convert meteorological wind direction (where wind comes FROM) to mathematical angle
+    # Meteorological: 0° = North, 90° = East, 180° = South, 270° = West
+    # Mathematical: 0° = East, 90° = North, 180° = West, 270° = South
+    # We want to show where wind is GOING TO (add 180°) and convert to math coordinates
+    math_angle = np.radians(90 - wind_direction_deg)  # Convert to math coordinates
     
-    # Scale arrow length based on wind speed
-    length = wind_speed * scale
+    # Scale arrow length based on wind speed (minimum visible length)
+    length = max(wind_speed * scale, 0.01)
     
-    # Calculate arrow tip coordinates
-    end_lat = lat + length * np.cos(direction_rad)
-    end_lon = lon + length * np.sin(direction_rad)
+    # Calculate arrow endpoint
+    end_lat = lat + length * np.sin(math_angle)
+    end_lon = lon + length * np.cos(math_angle)
     
-    # Create arrowhead
-    arrow_angle = np.radians(30)  # 30 degree arrowhead
-    head_length = length * 0.3
+    # Create arrowhead points
+    head_angle = np.radians(25)  # Narrower arrowhead
+    head_length = length * 0.4
     
-    # Left arrowhead point
-    left_lat = end_lat - head_length * np.cos(direction_rad - arrow_angle)
-    left_lon = end_lon - head_length * np.sin(direction_rad - arrow_angle)
+    # Calculate arrowhead points
+    left_angle = math_angle + head_angle + np.pi
+    right_angle = math_angle - head_angle + np.pi
     
-    # Right arrowhead point
-    right_lat = end_lat - head_length * np.cos(direction_rad + arrow_angle)
-    right_lon = end_lon - head_length * np.sin(direction_rad + arrow_angle)
+    left_lat = end_lat + head_length * np.sin(left_angle)
+    left_lon = end_lon + head_length * np.cos(left_angle)
+    
+    right_lat = end_lat + head_length * np.sin(right_angle)
+    right_lon = end_lon + head_length * np.cos(right_angle)
     
     return {
         'shaft': {'lat': [lat, end_lat], 'lon': [lon, end_lon]},
-        'head': {'lat': [left_lat, end_lat, right_lat], 'lon': [left_lon, end_lon, right_lon]}
+        'head': {'lat': [left_lat, end_lat, right_lat, left_lat], 'lon': [left_lon, end_lon, right_lon, left_lon]},
+        'wind_speed': wind_speed,
+        'direction': wind_direction_deg
     }
 
 def create_wind_overlay(city_data: List[Dict]):
@@ -89,25 +95,32 @@ def create_wind_overlay(city_data: List[Dict]):
                 hovertemplate=f"<b>{city['city']}</b><br>Precipitation: {city['precipitation']}mm<extra></extra>"
             ))
 
-    # Create animated wind arrows
+    # Create animated wind flow patterns - simplified for better performance
     frames = []
     base_traces = list(fig.data)  # Keep city markers and precipitation
     
-    for frame_i in range(12):  # 12 frames for smooth animation
+    for frame_i in range(8):  # Reduced frames for better performance
         frame_traces = base_traces.copy()
         
         for city in valid_cities:
-            # Add slight animation by rotating wind direction slightly
-            animated_direction = (city['wind_degree'] + frame_i * 3) % 360
+            wind_direction = city['wind_degree']
+            wind_speed = city['wind_speed']
             
-            # Create wind arrow
+            # Create flowing effect by moving arrow position along wind direction
+            flow_distance = (frame_i / 8.0) * 0.05  # Flow distance based on frame
+            math_angle = np.radians(90 - wind_direction)
+            
+            # Calculate flowing position
+            flow_lat = city['lat'] + flow_distance * np.sin(math_angle)
+            flow_lon = city['lon'] + flow_distance * np.cos(math_angle)
+            
+            # Create wind arrow at flowing position
             arrow = create_wind_arrows(
-                city['lat'], 
-                city['lon'], 
-                city['wind_speed'], 
-                animated_direction,
-                color='red',
-                scale=0.008  # Adjusted scale for better visibility
+                flow_lat,
+                flow_lon,
+                wind_speed,
+                wind_direction,
+                scale=0.015
             )
             
             # Add arrow shaft
@@ -115,32 +128,34 @@ def create_wind_overlay(city_data: List[Dict]):
                 lat=arrow['shaft']['lat'],
                 lon=arrow['shaft']['lon'],
                 mode='lines',
-                line=dict(width=3, color='red'),
+                line=dict(width=4, color='red'),
                 name=f"Wind - {city['city']}",
                 showlegend=False,
                 hovertemplate=f"<b>{city['city']}</b><br>Wind Speed: {city['wind_speed']} km/h<br>Direction: {city.get('wind_direction', 'N/A')}<extra></extra>"
             ))
             
-            # Add arrowhead
+            # Add arrowhead as filled polygon
             frame_traces.append(go.Scattermapbox(
                 lat=arrow['head']['lat'],
                 lon=arrow['head']['lon'],
                 mode='lines',
-                line=dict(width=3, color='red'),
+                line=dict(width=4, color='red'),
+                fill='toself',
+                fillcolor='red',
                 showlegend=False,
                 hovertemplate=f"<b>{city['city']}</b><br>Wind Speed: {city['wind_speed']} km/h<extra></extra>"
             ))
         
         frames.append(go.Frame(data=frame_traces, name=f'frame{frame_i}'))
 
-    # Add initial wind arrows to the base figure
+    # Add initial static wind arrows to the base figure
     for city in valid_cities:
         arrow = create_wind_arrows(
             city['lat'], 
             city['lon'], 
             city['wind_speed'], 
             city['wind_degree'],
-            scale=0.008
+            scale=0.015
         )
         
         # Add arrow shaft
@@ -148,20 +163,22 @@ def create_wind_overlay(city_data: List[Dict]):
             lat=arrow['shaft']['lat'],
             lon=arrow['shaft']['lon'],
             mode='lines',
-            line=dict(width=3, color='red'),
+            line=dict(width=4, color='darkred'),
             name=f"Wind - {city['city']}",
             showlegend=False,
             hovertemplate=f"<b>{city['city']}</b><br>Wind Speed: {city['wind_speed']} km/h<br>Direction: {city.get('wind_direction', 'N/A')}<extra></extra>"
         ))
         
-        # Add arrowhead
+        # Add arrowhead as filled polygon
         fig.add_trace(go.Scattermapbox(
             lat=arrow['head']['lat'],
             lon=arrow['head']['lon'],
             mode='lines',
-            line=dict(width=3, color='red'),
+            line=dict(width=4, color='darkred'),
+            fill='toself',
+            fillcolor='darkred',
             showlegend=False,
-            hovertemplate=f"<b>{city['city']}</b><br>Wind Speed: {city['wind_speed']} km/h<extra></extra>"
+            hovertemplate=f"<b>{city['city']}</b><br>Wind Speed: {city['wind_speed']} km/h<br>Direction: {city.get('wind_direction', 'N/A')}<extra></extra>"
         ))
 
     # Add frames to figure
@@ -177,21 +194,24 @@ def create_wind_overlay(city_data: List[Dict]):
         updatemenus=[dict(
             type='buttons',
             showactive=False,
-            y=0.9,
-            x=0.1,
+            y=0.95,
+            x=0.02,
+            bgcolor='rgba(255,255,255,0.8)',
+            bordercolor='gray',
+            borderwidth=1,
             buttons=[
                 dict(
-                    label='▶ Animate Wind',
+                    label='🌬️ Flow Animation',
                     method='animate',
                     args=[None, dict(
-                        frame=dict(duration=200, redraw=True),
+                        frame=dict(duration=400, redraw=True),
                         fromcurrent=True,
                         mode='immediate',
                         transition=dict(duration=100)
                     )]
                 ),
                 dict(
-                    label='⏸ Stop',
+                    label='⏹️ Stop',
                     method='animate',
                     args=[[None], dict(
                         frame=dict(duration=0, redraw=False),

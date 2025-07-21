@@ -262,9 +262,9 @@ def main():
     except Exception as e:
         st.error(f"Error fetching weather data: {str(e)}")
 
-else:
-    # Show comparison dashboard
-    show_comparison_dashboard()
+    else:
+        # Show comparison dashboard
+        show_comparison_dashboard()
 
 if __name__ == "__main__":
     main()

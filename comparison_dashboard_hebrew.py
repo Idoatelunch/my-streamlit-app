@@ -99,7 +99,7 @@ def show_comparison_dashboard():
         "Alfei Menashe": "אלפי מנשה",
         "Jaffa": "יפו",
         "Kfar Yona": "כפר יונה",
-        "Ramat Hasharon": "רמת השרון"
+        "Ramat Hasharon": "רמת השרון",
         "Tirat Carmel": "טירת כרמל"
     }
     

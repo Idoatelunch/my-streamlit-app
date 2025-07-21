@@ -72,13 +72,12 @@ ISRAELI_CITIES = [
     "Afula",
     "Nazareth",
     "Migdal HaEmek",
-    "Yokneam Illit",
+    "Yokneam",
     "Kiryat Tivon",
     "Rosh Pina",
     "Metula",
-    "Maalot-Tarshiha",
-    "Carmiel",
-    "Nahariya",
+    "Ma'alot-Tarshiha",
+    "Karmiel",
 
     # Central Region
     "Ramat HaSharon",
@@ -95,9 +94,8 @@ ISRAELI_CITIES = [
     "Kadima-Zoran",
     "Tel Mond",
     "Kfar Yona",
-    "Ramat Hasharon",
     "Givat Shmuel",
-    "Yehud-Monosson",
+    "Yehud",
 
     # Southern Cities
     "Eilat",

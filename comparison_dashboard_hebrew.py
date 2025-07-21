@@ -23,8 +23,6 @@ def show_comparison_dashboard():
         "Ashdod": "אשדוד",
         "Netanya": "נתניה",
         "Be'er Sheva": "באר שבע",
-        "Beer Sheva": "באר שבע",
-        "Beersheba": "באר שבע",
         "Holon": "חולון",
         "Ramat Gan": "רמת גן",
         "Herzliya": "הרצליה",
@@ -37,70 +35,42 @@ def show_comparison_dashboard():
         "Nahariya": "נהריה",
         "Lod": "לוד",
         "Givatayim": "גבעתיים",
-        "Eilat": "אילת",
-        "Nazareth": "נצרת",
+        "Kiryat Bialik": "קרית ביאליק",
+        "Kiryat Motzkin": "קרית מוצקין",
+        "Kiryat Yam": "קרית ים",
+        "Kiryat Ata": "קרית אתא",
+        "Kiryat Haim": "קרית חיים",
+        "Nesher": "נשר",
+        "Tirat Carmel": "טירת כרמל",
         "Tiberias": "טבריה",
         "Safed": "צפת",
         "Acre": "עכו",
-        "Hadera": "חדרה",
-        "Beit Shemesh": "בית שמש",
-        "Bnei Brak": "בני ברק",
-        "Karmiel": "כרמיאל",
-        "Kiryat Ata": "קרית אתא",
-        "Kiryat Bialik": "קרית ביאליק",
-        "Kiryat Gat": "קרית גת",
-        "Kiryat Malakhi": "קרית מלאכי",
-        "Kiryat Motzkin": "קרית מוצקין",
-        "Kiryat Ono": "קרית אונו",
         "Kiryat Shmona": "קרית שמונה",
-        "Kiryat Yam": "קרית ים",
-        "Ma'alot-Tarshiha": "מעלות-תרשיחא",
-        "Maale Adumim": "מעלה אדומים",
+        "Afula": "עפולה",
+        "Nazareth": "נצרת",
         "Migdal HaEmek": "מגדל העמק",
-        "Nof HaGalil": "נוף הגליל",
-        "Or Akiva": "אור עקיבא",
-        "Or Yehuda": "אור יהודה",
-        "Pardes Hanna-Karkur": "פרדס חנה-כרכור",
-        "Qalansawe": "קלנסווה",
-        "Raanana": "רעננה",
-        "Ramla": "רמלה",
-        "Rosh HaAyin": "ראש העין",
-        "Sakhnin": "סח'נין",
-        "Sderot": "שדרות",
-        "Shfaram": "שפרעם",
-        "Taibe": "טייבה",
-        "Tamra": "טמרה",
-        "Tayibe": "טייבה",
-        "Tira": "טירה",
-        "Tirat Carmel": "טירת כרמל",
-        "Umm al-Fahm": "אום אל-פחם",
-        "Yavne": "יבנה",
-        "Yehud": "יהוד",
         "Yokneam": "יקנעם",
-        "Zichron Yaakov": "זכרון יעקב",
-        "Arad": "ערד",
-        "Dimona": "דימונה",
-        "Ofakim": "אופקים",
-        "Netivot": "נתיבות",
-        "Mitzpe Ramon": "מצפה רמון",
-        "Yeroham": "ירוחם",
-        "Rahat": "רהט",
-        "Ariel": "אריאל",
-        "Beitar Illit": "ביתר עילית",
-        "Modiin Illit": "מודיעין עילית",
-        "Efrat": "אפרת",
-        "Kiryat Arba": "קרית ארבע",
-        "Kochav Yaakov": "כוכב יעקב",
-        "Beit El": "בית אל",
-        "Kedumim": "קדומים",
-        "Karnei Shomron": "קרני שומרון",
-        "Elkana": "אלקנה",
-        "Oranit": "אורנית",
-        "Alfei Menashe": "אלפי מנשה",
-        "Jaffa": "יפו",
+        "Kiryat Tivon": "קרית טבעון",
+        "Rosh Pina": "ראש פינה",
+        "Metula": "מטולה",
+        "Ma'alot-Tarshiha": "מעלות-תרשיחא",
+        "Karmiel": "כרמיאל",
+        "Ramat HaSharon": "רמת השרון",
+        "Hod HaSharon": "הוד השרון",
+        "Rosh HaAyin": "ראש העין",
+        "Yavne": "יבנה",
+        "Ramla": "רמלה",
+        "Ness Ziona": "נס ציונה",
+        "Or Yehuda": "אור יהודה",
+        "Ganei Tikva": "גני תקווה",
+        "Kiryat Ono": "קרית אונו",
+        "Shoham": "שוהם",
+        "Even Yehuda": "אבן יהודה",
+        "Kadima-Zoran": "קדימה-צורן",
+        "Tel Mond": "תל מונד",
         "Kfar Yona": "כפר יונה",
-        "Ramat Hasharon": "רמת השרון",
-        "Tirat Carmel": "טירת כרמל"
+        "Givat Shmuel": "גבעת שמואל",
+        "Yehud": "יהוד"
     }
     
     # Get selected cities
@@ -148,7 +118,13 @@ def show_comparison_dashboard():
         
         weather_data = []
         for city in st.session_state.comparison_cities:
-            current = weather_api.get_current_weather(city)
+            # Convert Hebrew city name to English for API call
+            english_city = city
+            hebrew_to_english = {v: k for k, v in city_translations.items()}
+            if city in hebrew_to_english:
+                english_city = hebrew_to_english[city]
+            
+            current = weather_api.get_current_weather(english_city)
             temp = current['main']['temp']
             if not use_celsius:
                 temp = celsius_to_fahrenheit(temp)
@@ -171,8 +147,14 @@ def show_comparison_dashboard():
         
         # Collect forecast data for all cities
         forecast_data = []
+        hebrew_to_english = {v: k for k, v in city_translations.items()}
         for city in st.session_state.comparison_cities:
-            city_forecast = weather_api.get_forecast(city)
+            # Convert Hebrew city name to English for API call
+            english_city = city
+            if city in hebrew_to_english:
+                english_city = hebrew_to_english[city]
+            
+            city_forecast = weather_api.get_forecast(english_city)
             df = process_forecast_data(city_forecast)
             if not use_celsius:
                 df['temperature'] = df['temperature'].apply(celsius_to_fahrenheit)

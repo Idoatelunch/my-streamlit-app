@@ -1,4 +1,3 @@
-
 import streamlit as st
 import plotly.express as px
 from datetime import datetime
@@ -19,7 +18,7 @@ from hebrew_translations import translations
 
 def main():
     # Page config is now set in app.py
-    
+
     # Apply custom styles
     apply_custom_styles()
 
@@ -145,12 +144,12 @@ def main():
             "Oranit": "אורנית",
             "Alfei Menashe": "אלפי מנשה"
         }
-        
+
         # Create list of Hebrew city names
         hebrew_cities = []
         english_to_hebrew = {}
         hebrew_to_english = {}
-        
+
         for city in ISRAELI_CITIES:
             if city in city_translations:
                 hebrew_cities.append(city_translations[city])
@@ -158,19 +157,19 @@ def main():
                 hebrew_to_english[city_translations[city]] = city
             else:
                 hebrew_cities.append(city)
-        
+
         # City search with autocomplete
         city_search = st.sidebar.text_input(f"🔍 {translations['search_city']}", "")
         if city_search:
             # Search both English and Hebrew city names
             matching_cities = search_cities(city_search)
             matching_hebrew = []
-            
+
             # Also search in Hebrew names
             for hebrew_city in hebrew_cities:
                 if city_search.lower() in hebrew_city.lower():
                     matching_hebrew.append(hebrew_city)
-            
+
             # Convert English matches to Hebrew
             for city in matching_cities:
                 if city in english_to_hebrew:
@@ -180,7 +179,7 @@ def main():
                 else:
                     if city not in matching_hebrew:
                         matching_hebrew.append(city)
-                    
+
             if matching_hebrew:
                 selected_hebrew = st.sidebar.selectbox(
                     translations["select_city"],
@@ -223,9 +222,25 @@ def main():
         st.title(f"{translations['weather_in']} {selected_city}, {translations['israel']} 🌤️")
 
         try:
-            # Current weather
-            with st.spinner(translations["fetching_current_weather"]):
-                current_weather = weather_api.get_current_weather(selected_city)
+            if selected_city:
+                # Convert Hebrew city name to English for API call
+                english_city = selected_city
+                if selected_city in hebrew_to_english:
+                    english_city = hebrew_to_english[selected_city]
+
+                # Show weather for selected city
+                st.markdown(f"# {WEATHER_ICONS.get('02d', '☀️')} {translations['weather_in']} {selected_city}, {translations['israel']}")
+
+                # Add to favorites button
+                if selected_city not in st.session_state.favorites:
+                    if st.button(f"⭐ {translations['add_to_favorites']} {selected_city}"):
+                        st.session_state.favorites.add(selected_city)
+                        st.success(f"{selected_city} {translations['added_to_favorites']}!")
+                        st.rerun()
+
+                # Get current weather using English city name
+                with st.spinner(translations["fetching_current_weather"]):
+                    current_weather = weather_api.get_current_weather(english_city)
 
             # Display current weather
             col1, col2, col3 = st.columns(3)
@@ -266,8 +281,9 @@ def main():
 
             # Forecast
             st.markdown(f"## {translations['five_day_forecast']}")
+            # Get 5-day forecast using English city name
             with st.spinner(translations["fetching_forecast_data"]):
-                forecast_data = weather_api.get_forecast(selected_city)
+                forecast_data = weather_api.get_forecast(english_city)
                 df = process_forecast_data(forecast_data)
 
             if not use_celsius:
@@ -292,16 +308,16 @@ def main():
 
             # Daily forecast cards
             st.markdown(f"### {translations['daily_details']}")
-            
+
             # Group by day and calculate numeric column means
             numeric_cols = ['temperature', 'humidity']
             daily_forecast = df.copy()
             daily_forecast['date'] = daily_forecast['datetime'].dt.date
             daily_means = daily_forecast.groupby('date')[numeric_cols].mean().reset_index()
-            
+
             # Add datetime back for display
             daily_means['datetime'] = pd.to_datetime(daily_means['date'])
-            
+
             # Hebrew day and month names
             hebrew_days = {
                 'Monday': 'יום שני',
@@ -312,7 +328,7 @@ def main():
                 'Saturday': 'יום שבת',
                 'Sunday': 'יום ראשון'
             }
-            
+
             hebrew_months = {
                 'January': 'ינואר',
                 'February': 'פברואר',
@@ -327,17 +343,17 @@ def main():
                 'November': 'נובמבר',
                 'December': 'דצמבר'
             }
-            
+
             for _, row in daily_means.iterrows():
                 # Get English format first
                 english_day = row['datetime'].strftime('%A')
                 english_month = row['datetime'].strftime('%B')
                 day_num = row['datetime'].strftime('%d')
-                
+
                 # Convert to Hebrew
                 hebrew_day = hebrew_days.get(english_day, english_day)
                 hebrew_month = hebrew_months.get(english_month, english_month)
-                
+
                 with st.container():
                     st.markdown(f"""
                         <div class="weather-card">

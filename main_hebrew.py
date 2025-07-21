@@ -71,6 +71,7 @@ def main():
             "Netanya": "נתניה",
             "Be'er Sheva": "באר שבע",
             "Beer Sheva": "באר שבע",
+            "Beersheba": "באר שבע",
             "Holon": "חולון",
             "Ramat Gan": "רמת גן",
             "Herzliya": "הרצליה",
@@ -88,7 +89,61 @@ def main():
             "Tiberias": "טבריה",
             "Safed": "צפת",
             "Acre": "עכו",
-            "Hadera": "חדרה"
+            "Hadera": "חדרה",
+            "Beit Shemesh": "בית שמש",
+            "Bnei Brak": "בני ברק",
+            "Karmiel": "כרמיאל",
+            "Kiryat Ata": "קרית אתא",
+            "Kiryat Bialik": "קרית ביאליק",
+            "Kiryat Gat": "קרית גת",
+            "Kiryat Malakhi": "קרית מלאכי",
+            "Kiryat Motzkin": "קרית מוצקין",
+            "Kiryat Ono": "קרית אונו",
+            "Kiryat Shmona": "קרית שמונה",
+            "Kiryat Yam": "קרית ים",
+            "Ma'alot-Tarshiha": "מעלות-תרשיחא",
+            "Maale Adumim": "מעלה אדומים",
+            "Migdal HaEmek": "מגדל העמק",
+            "Nof HaGalil": "נוף הגליל",
+            "Or Akiva": "אור עקיבא",
+            "Or Yehuda": "אור יהודה",
+            "Pardes Hanna-Karkur": "פרדס חנה-כרכור",
+            "Qalansawe": "קלנסווה",
+            "Raanana": "רעננה",
+            "Ramla": "רמלה",
+            "Rosh HaAyin": "ראש העין",
+            "Sakhnin": "סח'נין",
+            "Sderot": "שדרות",
+            "Shfaram": "שפרעם",
+            "Taibe": "טייבה",
+            "Tamra": "טמרה",
+            "Tayibe": "טייבה",
+            "Tira": "טירה",
+            "Tirat Carmel": "טירת כרמל",
+            "Umm al-Fahm": "אום אל-פחם",
+            "Yavne": "יבנה",
+            "Yehud": "יהוד",
+            "Yokneam": "יקנעם",
+            "Zichron Yaakov": "זכרון יעקב",
+            "Arad": "ערד",
+            "Dimona": "דימונה",
+            "Ofakim": "אופקים",
+            "Netivot": "נתיבות",
+            "Mitzpe Ramon": "מצפה רמון",
+            "Yeroham": "ירוחם",
+            "Rahat": "רהט",
+            "Ariel": "אריאל",
+            "Beitar Illit": "ביתר עילית",
+            "Modiin Illit": "מודיעין עילית",
+            "Efrat": "אפרת",
+            "Kiryat Arba": "קרית ארבע",
+            "Kochav Yaakov": "כוכב יעקב",
+            "Beit El": "בית אל",
+            "Kedumim": "קדומים",
+            "Karnei Shomron": "קרני שומרון",
+            "Elkana": "אלקנה",
+            "Oranit": "אורנית",
+            "Alfei Menashe": "אלפי מנשה"
         }
         
         # Create list of Hebrew city names
@@ -107,19 +162,29 @@ def main():
         # City search with autocomplete
         city_search = st.sidebar.text_input(f"🔍 {translations['search_city']}", "")
         if city_search:
+            # Search both English and Hebrew city names
             matching_cities = search_cities(city_search)
             matching_hebrew = []
             
+            # Also search in Hebrew names
+            for hebrew_city in hebrew_cities:
+                if city_search.lower() in hebrew_city.lower():
+                    matching_hebrew.append(hebrew_city)
+            
+            # Convert English matches to Hebrew
             for city in matching_cities:
                 if city in english_to_hebrew:
-                    matching_hebrew.append(english_to_hebrew[city])
+                    hebrew_name = english_to_hebrew[city]
+                    if hebrew_name not in matching_hebrew:
+                        matching_hebrew.append(hebrew_name)
                 else:
-                    matching_hebrew.append(city)
+                    if city not in matching_hebrew:
+                        matching_hebrew.append(city)
                     
             if matching_hebrew:
                 selected_hebrew = st.sidebar.selectbox(
                     translations["select_city"],
-                    matching_hebrew,
+                    sorted(matching_hebrew),
                     key="city_selector"
                 )
                 selected_city = selected_hebrew
@@ -129,8 +194,9 @@ def main():
         else:
             selected_city = st.sidebar.selectbox(
                 translations["select_city"],
-                hebrew_cities,
-                key="city_selector"
+                sorted(hebrew_cities),
+                key="city_selector",
+                index=hebrew_cities.index("ירושלים") if "ירושלים" in hebrew_cities else 0
             )
 
         # Favorite toggle button

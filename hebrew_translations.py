@@ -50,5 +50,6 @@ translations = {
     'temperature_comparison': 'השוואת טמפרטורות',
     'humidity_comparison': 'השוואת לחות',
     'five_day_temperature_forecast': 'תחזית טמפרטורות לחמישה ימים',
-    'five_day_humidity_forecast': 'תחזית לחות לחמישה ימים'
+    'five_day_humidity_forecast': 'תחזית לחות לחמישה ימים',
+    'humidity': 'לחות'
 }

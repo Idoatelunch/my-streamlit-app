@@ -22,61 +22,62 @@ def main():
     apply_custom_styles()
 
 # Navigation
-st.sidebar.title("Navigation")
-page = st.sidebar.radio("Select View", ["Single City Weather", "City Comparison"])
+    st.sidebar.title("Navigation")
+    page = st.sidebar.radio("Select View", ["Single City Weather", "City Comparison"])
 
-if page == "Single City Weather":
-    # Initialize WeatherAPI
-    try:
-        weather_api = WeatherAPI()
-    except ValueError as e:
-        st.error(str(e))
-        st.stop()
-
-    # Initialize favorites in session state
-    if 'favorites' not in st.session_state:
-        # Try to load favorites from local storage
-        favorites_json = st.session_state.get('_favorites_json', '[]')
+    if page == "Single City Weather":
+        # Initialize WeatherAPI
         try:
-            st.session_state.favorites = set(json.loads(favorites_json))
-        except json.JSONDecodeError:
-            st.session_state.favorites = set()
+            weather_api = WeatherAPI()
+        except ValueError as e:
+            st.error(str(e))
+            st.stop()
 
-    # Settings section
-    st.sidebar.markdown("## ⚙️ Settings")
+        # Initialize favorites in session state
+        if 'favorites' not in st.session_state:
+            # Try to load favorites from local storage
+            favorites_json = st.session_state.get('_favorites_json', '[]')
+            try:
+                st.session_state.favorites = set(json.loads(favorites_json))
+            except json.JSONDecodeError:
+                st.session_state.favorites = set()
 
-    # Favorites section
-    st.sidebar.markdown("## ⭐ Favorite Cities")
-    if st.session_state.favorites:
-        selected_favorite = st.sidebar.selectbox(
-            "Select from Favorites",
-            sorted(list(st.session_state.favorites)),
-            key="favorite_selector"
-        )
-        if selected_favorite:
-            selected_city = selected_favorite
-    else:
-        st.sidebar.info("No favorite cities yet. Add some cities to your favorites!")
+        # Settings section
+        st.sidebar.markdown("## ⚙️ Settings")
 
-    # City search with autocomplete
-    city_search = st.sidebar.text_input("🔍 Search City", "")
-    if city_search:
-        matching_cities = search_cities(city_search)
-        if matching_cities:
+        # Favorites section
+        st.sidebar.markdown("## ⭐ Favorite Cities")
+        selected_city = "Jerusalem"  # Default value
+        
+        if st.session_state.favorites:
+            selected_favorite = st.sidebar.selectbox(
+                "Select from Favorites",
+                sorted(list(st.session_state.favorites)),
+                key="favorite_selector"
+            )
+            if selected_favorite:
+                selected_city = selected_favorite
+
+        # City search with autocomplete
+        city_search = st.sidebar.text_input("🔍 Search City", "")
+        if city_search:
+            matching_cities = search_cities(city_search)
+            if matching_cities:
+                selected_city = st.sidebar.selectbox(
+                    "Select City",
+                    matching_cities,
+                    key="city_selector"
+                )
+            else:
+                st.sidebar.warning("No matching cities found")
+                selected_city = "Jerusalem"  # Default to Jerusalem if no matches
+        else:
             selected_city = st.sidebar.selectbox(
                 "Select City",
-                matching_cities,
-                key="city_selector"
+                ISRAELI_CITIES,
+                key="city_selector",
+                index=ISRAELI_CITIES.index("Jerusalem") if "Jerusalem" in ISRAELI_CITIES else 0
             )
-        else:
-            st.sidebar.warning("No matching cities found")
-            selected_city = "Jerusalem"  # Default to Jerusalem if no matches
-    else:
-        selected_city = st.sidebar.selectbox(
-            "Select City",
-            ISRAELI_CITIES,
-            key="city_selector"
-        )
 
     # Favorite toggle button
     col1, col2 = st.sidebar.columns([3, 1])

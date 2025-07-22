@@ -112,3 +112,6 @@ Preferred communication style: Simple, everyday language.
 - ✅ Improved wind visualization with filled arrowheads for better visibility
 - ✅ Multi-city wind data integration for comprehensive AR experience
 - ✅ Resolved map rendering issues with proper arrow display
+- ✅ Integrated real weather data using WeatherAPI.com for authentic conditions
+- ✅ Fixed country name display from "Isra" to "Israel" in English version
+- ✅ Added temperature color-coding and live weather statistics to AR overlay

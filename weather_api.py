@@ -8,17 +8,9 @@ class WeatherAPI:
         self.base_url = "https://api.openweathermap.org/data/2.5"
         # Get API key from environment variable
         import os
-        self.api_key = os.environ.get('OPENWEATHER_API_KEY')
+        self.api_key = os.environ.get('OPENWEATHERMAP_API_KEY')
         # Use mock data only if no API key is provided
         self.use_mock_data = not bool(self.api_key)
-        
-        # Debug: Print API key status (without revealing the actual key)
-        if self.api_key:
-            print(f"✅ API Key found - Length: {len(self.api_key)} characters")
-            print("🌤️ Using REAL weather data from OpenWeatherMap")
-        else:
-            print("⚠️ No API key found - Using MOCK weather data")
-            print("💡 Add OPENWEATHER_API_KEY to your Secrets to use real data")
 
         # Hebrew city translations
         self.hebrew_to_english = {

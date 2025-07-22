@@ -92,9 +92,9 @@ class WeatherAPI:
         converted = {
             "coord": {"lon": data['location']['lon'], "lat": data['location']['lat']},
             "weather": [{
-                "id": data['current']['condition']['code'],
-                "main": data['current']['condition']['text'],
-                "description": data['current']['condition']['text'].lower(),
+                "id": data['current']['condition'].get('code', 1000),
+                "main": data['current']['condition'].get('text', 'Clear'),
+                "description": data['current']['condition'].get('text', 'clear sky').lower(),
                 "icon": "01d"  # Default icon, will be mapped by the UI
             }],
             "main": {

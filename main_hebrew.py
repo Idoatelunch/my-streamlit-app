@@ -265,8 +265,9 @@ def main():
 
             with col3:
                 st.markdown(f"### {translations['conditions']}")
-                icon = current_weather['weather'][0]['icon']
-                st.markdown(f"### {WEATHER_ICONS.get(icon, '❓')} {current_weather['weather'][0]['description'].capitalize()}")
+                icon = current_weather.get('weather', [{}])[0].get('icon', '01d')
+                description = current_weather.get('weather', [{}])[0].get('description', 'לא זמין')
+                st.markdown(f"### {WEATHER_ICONS.get(icon, '❓')} {description.capitalize()}")
 
             # Real-time Wind and Precipitation AR Overlay
             col_title, col_refresh = st.columns([3, 1])
@@ -275,10 +276,10 @@ def main():
             with col_refresh:
                 if st.button("🔄 רענן נתונים", help="עדכן כיסוי AR עם נתוני מזג האוויר העדכניים"):
                     st.rerun()
-            
+
             # Get multiple cities for comprehensive AR visualization
             city_coords = get_city_coordinates()
-            
+
             # Enhance city data with weather information for AR overlay
             enhanced_cities = []
             for city_data in city_coords:
@@ -290,7 +291,7 @@ def main():
                     else:
                         # Fetch weather for other cities using English names
                         city_weather = weather_api.get_current_weather(city_data['city'])
-                    
+
                     # Add weather data to city coordinates
                     enhanced_city = city_data.copy()
                     enhanced_city['wind_speed'] = city_weather.get('wind', {}).get('speed', 0)
@@ -298,7 +299,7 @@ def main():
                     enhanced_city['wind_direction'] = city_weather.get('wind', {}).get('direction', 'N')
                     enhanced_city['temperature'] = city_weather.get('main', {}).get('temp', 20)
                     enhanced_city['humidity'] = city_weather.get('main', {}).get('humidity', 50)
-                    
+
                     # Add precipitation data (rain or snow)
                     precipitation = 0
                     if 'rain' in city_weather:
@@ -306,21 +307,21 @@ def main():
                     elif 'snow' in city_weather:
                         precipitation = city_weather['snow'].get('1h', 0)
                     enhanced_city['precipitation'] = precipitation
-                    
+
                     enhanced_cities.append(enhanced_city)
-                    
+
                 except Exception as e:
                     # If we can't get weather for a city, skip it
                     continue
-            
+
             if enhanced_cities:
                 # Create AR overlay with wind arrows and precipitation
                 wind_fig = create_wind_overlay(enhanced_cities)
                 st.plotly_chart(wind_fig, use_container_width=True, key="ar_overlay_hebrew")
-                
+
                 # Enhanced AR info panel
                 col1, col2 = st.columns([2, 1])
-                
+
                 with col1:
                     st.markdown("""
                     **🌪️ בקרות כיסוי מזג האוויר AR:**
@@ -328,10 +329,10 @@ def main():
                     - 🔴 **חצים אדומים**: וקטורי רוח בזמן אמת (כיוון ומהירות)
                     - 💧 **הילות כחולות**: אזורי משקעים פעילים
                     - 🌬️ **לחץ על 'הנפשת זרימה'** להפעלת סימולציית זרימת רוח
-                    
+
                     *אורך החץ = מהירות רוח • כיוון החץ = זרימת רוח*
                     """)
-                
+
                 with col2:
                     # Real-time weather stats
                     st.markdown("**סטטיסטיקות מזג אוויר חיות:**")
@@ -339,7 +340,7 @@ def main():
                     active_precipitation = sum(1 for city in enhanced_cities if city.get('precipitation', 0) > 0)
                     st.metric("מהירות רוח ממוצעת", f"{avg_wind:.1f} קמ\"ש")
                     st.metric("אזורי משקעים", f"{active_precipitation} ערים")
-                    
+
                     # Weather intensity indicator
                     max_wind = max(city.get('wind_speed', 0) for city in enhanced_cities)
                     if max_wind > 15:

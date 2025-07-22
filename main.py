@@ -111,8 +111,9 @@ def main():
 
         with col3:
             st.markdown("### Conditions")
-            icon = current_weather['weather'][0]['icon']
-            st.markdown(f"### {WEATHER_ICONS.get(icon, '❓')} {current_weather['weather'][0]['description'].capitalize()}")
+            icon = current_weather.get('weather', [{}])[0].get('icon', '01d')
+            description = current_weather.get('weather', [{}])[0].get('description', 'not available')
+            st.markdown(f"### {WEATHER_ICONS.get(icon, '❓')} {description.capitalize()}")
 
         # Real-time Wind and Precipitation AR Overlay
         col_title, col_refresh = st.columns([3, 1])

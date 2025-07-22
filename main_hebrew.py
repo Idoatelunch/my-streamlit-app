@@ -59,7 +59,7 @@ def main():
         else:
             st.sidebar.info(translations["no_favorites"])
 
-        # Hebrew city translations
+        # Hebrew city translations - comprehensive list
         city_translations = {
             "Jerusalem": "ירושלים",
             "Tel Aviv": "תל אביב",
@@ -100,6 +100,7 @@ def main():
             "Kiryat Ono": "קרית אונו",
             "Kiryat Shmona": "קרית שמונה",
             "Kiryat Yam": "קרית ים",
+            "Kiryat Haim": "קרית חיים",
             "Ma'alot-Tarshiha": "מעלות-תרשיחא",
             "Maale Adumim": "מעלה אדומים",
             "Migdal HaEmek": "מגדל העמק",
@@ -142,7 +143,44 @@ def main():
             "Karnei Shomron": "קרני שומרון",
             "Elkana": "אלקנה",
             "Oranit": "אורנית",
-            "Alfei Menashe": "אלפי מנשה"
+            "Alfei Menashe": "אלפי מנשה",
+            "Nesher": "נשר",
+            "Kiryat Tivon": "קרית טבעון",
+            "Rosh Pina": "ראש פינה",
+            "Metula": "מטולה",
+            "Afula": "עפולה",
+            "Ramat HaSharon": "רמת השרון",
+            "Hod HaSharon": "הוד השרון",
+            "Ness Ziona": "נס ציונה",
+            "Ganei Tikva": "גני תקווה",
+            "Shoham": "שוהם",
+            "Even Yehuda": "אבן יהודה",
+            "Kadima-Zoran": "קדימה-צורן",
+            "Tel Mond": "תל מונד",
+            "Kfar Yona": "כפר יונה",
+            "Givat Shmuel": "גבעת שמואל",
+            "Binyamina": "בנימינה",
+            "Givat Ada": "גבעת עדה",
+            "Karkur": "כרכור",
+            "Caesarea": "קיסריה",
+            "Bat Hefer": "בת חפר",
+            "Ein Iron": "עין איירון",
+            "Beer Yaakov": "באר יעקב",
+            "Kuseife": "כוסייפה",
+            "Tel Sheva": "תל שבע",
+            "Lehavim": "להבים",
+            "Meitar": "מיתר",
+            "Omer": "עומר",
+            "Yeruham": "ירוחם",
+            "Majd al-Krum": "מג'ד אל-כרום",
+            "Maghar": "מגאר",
+            "Arraba": "עראבה",
+            "I'billin": "אעבלין",
+            "Kafr Kanna": "כפר כנא",
+            "Yafa an-Naseriyye": "יאפא א-נאצרה",
+            "Julis": "ג'וליס",
+            "Abu Sinan": "אבו סנאן",
+            "Jadeidi-Makr": "ג'דיידה-מכר"
         }
 
         # Create list of Hebrew city names
@@ -158,45 +196,13 @@ def main():
             else:
                 hebrew_cities.append(city)
 
-        # City search with autocomplete
-        city_search = st.sidebar.text_input(f"🔍 {translations['search_city']}", "")
-        if city_search:
-            # Search both English and Hebrew city names
-            matching_cities = search_cities(city_search)
-            matching_hebrew = []
-
-            # Also search in Hebrew names
-            for hebrew_city in hebrew_cities:
-                if city_search.lower() in hebrew_city.lower():
-                    matching_hebrew.append(hebrew_city)
-
-            # Convert English matches to Hebrew
-            for city in matching_cities:
-                if city in english_to_hebrew:
-                    hebrew_name = english_to_hebrew[city]
-                    if hebrew_name not in matching_hebrew:
-                        matching_hebrew.append(hebrew_name)
-                else:
-                    if city not in matching_hebrew:
-                        matching_hebrew.append(city)
-
-            if matching_hebrew:
-                selected_hebrew = st.sidebar.selectbox(
-                    translations["select_city"],
-                    sorted(matching_hebrew),
-                    key="city_selector"
-                )
-                selected_city = selected_hebrew
-            else:
-                st.sidebar.warning(translations["no_matching_cities"])
-                selected_city = "ירושלים"  # Default to Jerusalem if no matches
-        else:
-            selected_city = st.sidebar.selectbox(
-                translations["select_city"],
-                sorted(hebrew_cities),
-                key="city_selector",
-                index=hebrew_cities.index("ירושלים") if "ירושלים" in hebrew_cities else 0
-            )
+        # City selection
+        selected_city = st.sidebar.selectbox(
+            translations["select_city"],
+            sorted(hebrew_cities),
+            key="city_selector",
+            index=hebrew_cities.index("ירושלים") if "ירושלים" in hebrew_cities else 0
+        )
 
         # Favorite toggle button
         col1, col2 = st.sidebar.columns([3, 1])

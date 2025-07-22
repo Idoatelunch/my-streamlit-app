@@ -58,26 +58,13 @@ def main():
             if selected_favorite:
                 selected_city = selected_favorite
 
-        # City search with autocomplete
-        city_search = st.sidebar.text_input("🔍 Search City", "")
-        if city_search:
-            matching_cities = search_cities(city_search)
-            if matching_cities:
-                selected_city = st.sidebar.selectbox(
-                    "Select City",
-                    matching_cities,
-                    key="city_selector"
-                )
-            else:
-                st.sidebar.warning("No matching cities found")
-                selected_city = "Jerusalem"  # Default to Jerusalem if no matches
-        else:
-            selected_city = st.sidebar.selectbox(
-                "Select City",
-                ISRAELI_CITIES,
-                key="city_selector",
-                index=ISRAELI_CITIES.index("Jerusalem") if "Jerusalem" in ISRAELI_CITIES else 0
-            )
+        # City selection
+        selected_city = st.sidebar.selectbox(
+            "Select City",
+            ISRAELI_CITIES,
+            key="city_selector",
+            index=ISRAELI_CITIES.index("Jerusalem") if "Jerusalem" in ISRAELI_CITIES else 0
+        )
 
     # Favorite toggle button
     col1, col2 = st.sidebar.columns([3, 1])

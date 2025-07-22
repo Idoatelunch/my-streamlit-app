@@ -6,9 +6,11 @@ class WeatherAPI:
 
     def __init__(self):
         self.base_url = "https://api.openweathermap.org/data/2.5"
-        # For demo purposes - we'll use mock data since the demo API key is expired
-        self.use_mock_data = True
-        self.api_key = "your-api-key-here"  # Replace with actual API key if needed
+        # Get API key from environment variable
+        import os
+        self.api_key = os.environ.get('OPENWEATHERMAP_API_KEY')
+        # Use mock data only if no API key is provided
+        self.use_mock_data = not bool(self.api_key)
 
         # Hebrew city translations
         self.hebrew_to_english = {

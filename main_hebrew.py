@@ -268,22 +268,88 @@ def main():
                 icon = current_weather['weather'][0]['icon']
                 st.markdown(f"### {WEATHER_ICONS.get(icon, '❓')} {current_weather['weather'][0]['description'].capitalize()}")
 
-            # Wind Visualization
-            st.markdown(f"## {translations['real_time_wind']} 🌬️")
+            # Real-time Wind and Precipitation AR Overlay
+            col_title, col_refresh = st.columns([3, 1])
+            with col_title:
+                st.markdown(f"## 🌬️ {translations.get('real_time_wind_precipitation', 'כיסוי AR של רוח ומשקעים בזמן אמת')}")
+            with col_refresh:
+                if st.button("🔄 רענן נתונים", help="עדכן כיסוי AR עם נתוני מזג האוויר העדכניים"):
+                    st.rerun()
+            
+            # Get multiple cities for comprehensive AR visualization
             city_coords = get_city_coordinates()
-
-            # Update wind data for visualization
+            
+            # Enhance city data with weather information for AR overlay
+            enhanced_cities = []
             for city_data in city_coords:
-                if city_data.get('hebrew_city') == selected_city or city_data['city'] == selected_city:
-                    # Initialize wind properties
-                    city_data['wind_speed'] = current_weather['wind']['speed']
-                    city_data['wind_degree'] = current_weather['wind']['deg']
-                    city_data['wind_direction'] = current_weather['wind']['direction']
-                    break
-
-            # Create and display wind visualization
-            wind_fig = create_wind_overlay(city_coords)
-            st.plotly_chart(wind_fig, use_container_width=True)
+                try:
+                    # Get weather data for each city
+                    if city_data.get('hebrew_city') == selected_city:
+                        # Use already fetched data for selected city
+                        city_weather = current_weather
+                    else:
+                        # Fetch weather for other cities using English names
+                        city_weather = weather_api.get_current_weather(city_data['city'])
+                    
+                    # Add weather data to city coordinates
+                    enhanced_city = city_data.copy()
+                    enhanced_city['wind_speed'] = city_weather.get('wind', {}).get('speed', 0)
+                    enhanced_city['wind_degree'] = city_weather.get('wind', {}).get('deg', 0)
+                    enhanced_city['wind_direction'] = city_weather.get('wind', {}).get('direction', 'N')
+                    enhanced_city['temperature'] = city_weather.get('main', {}).get('temp', 20)
+                    enhanced_city['humidity'] = city_weather.get('main', {}).get('humidity', 50)
+                    
+                    # Add precipitation data (rain or snow)
+                    precipitation = 0
+                    if 'rain' in city_weather:
+                        precipitation = city_weather['rain'].get('1h', 0)
+                    elif 'snow' in city_weather:
+                        precipitation = city_weather['snow'].get('1h', 0)
+                    enhanced_city['precipitation'] = precipitation
+                    
+                    enhanced_cities.append(enhanced_city)
+                    
+                except Exception as e:
+                    # If we can't get weather for a city, skip it
+                    continue
+            
+            if enhanced_cities:
+                # Create AR overlay with wind arrows and precipitation
+                wind_fig = create_wind_overlay(enhanced_cities)
+                st.plotly_chart(wind_fig, use_container_width=True, key="ar_overlay_hebrew")
+                
+                # Enhanced AR info panel
+                col1, col2 = st.columns([2, 1])
+                
+                with col1:
+                    st.markdown("""
+                    **🌪️ בקרות כיסוי מזג האוויר AR:**
+                    - 🔵 **עיגולים כחולים**: מיקומי ערים עם נתוני מזג אוויר בזמן אמת
+                    - 🔴 **חצים אדומים**: וקטורי רוח בזמן אמת (כיוון ומהירות)
+                    - 💧 **הילות כחולות**: אזורי משקעים פעילים
+                    - 🌬️ **לחץ על 'הנפשת זרימה'** להפעלת סימולציית זרימת רוח
+                    
+                    *אורך החץ = מהירות רוח • כיוון החץ = זרימת רוח*
+                    """)
+                
+                with col2:
+                    # Real-time weather stats
+                    st.markdown("**סטטיסטיקות מזג אוויר חיות:**")
+                    avg_wind = sum(city.get('wind_speed', 0) for city in enhanced_cities) / len(enhanced_cities)
+                    active_precipitation = sum(1 for city in enhanced_cities if city.get('precipitation', 0) > 0)
+                    st.metric("מהירות רוח ממוצעת", f"{avg_wind:.1f} קמ\"ש")
+                    st.metric("אזורי משקעים", f"{active_precipitation} ערים")
+                    
+                    # Weather intensity indicator
+                    max_wind = max(city.get('wind_speed', 0) for city in enhanced_cities)
+                    if max_wind > 15:
+                        st.warning("⚠️ התרעת רוח חזקה")
+                    elif active_precipitation > 2:
+                        st.info("🌧️ מספר אזורי גשם")
+                    else:
+                        st.success("🌤️ תנאים יציבים")
+            else:
+                st.warning("לא ניתן לטעון נתוני מזג אוויר עבור הדמיית AR. אנא נסה לרענן את הדף.")
 
             # Forecast
             st.markdown(f"## {translations['five_day_forecast']}")

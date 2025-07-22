@@ -51,5 +51,7 @@ translations = {
     'five_day_humidity_forecast': 'תחזית לחות לחמישה ימים',
     'humidity': 'לחות',
     'add_to_favorites': 'הוסף למועדפים',
-    'added_to_favorites': 'נוסף למועדפים'
+    'added_to_favorites': 'נוסף למועדפים',
+    'real_time_wind': 'רוח בזמן אמת',
+    'real_time_wind_precipitation': 'כיסוי AR של רוח ומשקעים בזמן אמת'
 }

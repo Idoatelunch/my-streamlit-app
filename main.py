@@ -84,7 +84,7 @@ def main():
                 st.session_state['_favorites_json'] = json.dumps(list(st.session_state.favorites))
                 st.rerun()
 
-    use_celsius = st.sidebar.radio("Temperature Unit", ["Celsius", "Fahrenheit"]) == "Celsius"
+    use_celsius = st.sidebar.radio("Temperature Unit", ["Celsius", "Fahrenheit"], key="main_temp_unit") == "Celsius"
 
     # Main content
     st.title(f"Weather in {selected_city}, Isra 🌤️")

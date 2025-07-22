@@ -42,7 +42,7 @@ def show_comparison_dashboard():
             st.rerun()
 
     # Temperature unit selection
-    use_celsius = st.sidebar.radio("Temperature Unit", ["Celsius", "Fahrenheit"]) == "Celsius"
+    use_celsius = st.sidebar.radio("Temperature Unit", ["Celsius", "Fahrenheit"], key="comparison_temp_unit") == "Celsius"
 
     try:
         weather_api = WeatherAPI()

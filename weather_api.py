@@ -8,7 +8,7 @@ class WeatherAPI:
         self.base_url = "https://api.openweathermap.org/data/2.5"
         # Get API key from environment variable
         import os
-        self.api_key = os.environ.get('OPENWEATHERMAP_API_KEY')
+        self.api_key = os.environ.get('OPENWEATHER_API_KEY')
         # Use mock data only if no API key is provided
         self.use_mock_data = not bool(self.api_key)
 

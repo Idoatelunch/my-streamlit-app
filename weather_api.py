@@ -89,13 +89,17 @@ class WeatherAPI:
         data = response.json()
         
         # Convert WeatherAPI format to OpenWeatherMap format for consistency
+        # Map WeatherAPI condition to appropriate icon
+        condition_text = data['current']['condition'].get('text', 'Clear').lower()
+        icon = self._map_condition_to_icon(condition_text)
+        
         converted = {
             "coord": {"lon": data['location']['lon'], "lat": data['location']['lat']},
             "weather": [{
                 "id": data['current']['condition'].get('code', 1000),
                 "main": data['current']['condition'].get('text', 'Clear'),
-                "description": data['current']['condition'].get('text', 'clear sky').lower(),
-                "icon": "01d"  # Default icon, will be mapped by the UI
+                "description": condition_text,
+                "icon": icon
             }],
             "main": {
                 "temp": data['current']['temp_c'],
@@ -266,6 +270,9 @@ class WeatherAPI:
         for day in data['forecast']['forecastday']:
             for hour in day['hour']:
                 from datetime import datetime
+                condition_text = hour['condition']['text'].lower()
+                icon = self._map_condition_to_icon(condition_text)
+                
                 forecast_item = {
                     "dt": int(datetime.fromisoformat(hour['time'].replace(' ', 'T')).timestamp()),
                     "main": {
@@ -274,7 +281,8 @@ class WeatherAPI:
                     },
                     "weather": [{
                         "main": hour['condition']['text'],
-                        "description": hour['condition']['text'].lower()
+                        "description": condition_text,
+                        "icon": icon
                     }],
                     "dt_txt": hour['time']
                 }
@@ -398,3 +406,23 @@ class WeatherAPI:
         directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"]
         index = round(degrees / 45)
         return directions[index]
+    
+    def _map_condition_to_icon(self, condition: str) -> str:
+        """Map weather condition text to appropriate icon code"""
+        condition = condition.lower()
+        if "clear" in condition or "sunny" in condition:
+            return "01d"
+        elif "partly cloudy" in condition or "few clouds" in condition:
+            return "02d"
+        elif "cloudy" in condition or "overcast" in condition:
+            return "04d"
+        elif "rain" in condition or "drizzle" in condition:
+            return "10d"
+        elif "storm" in condition or "thunder" in condition:
+            return "11d"
+        elif "snow" in condition:
+            return "13d"
+        elif "mist" in condition or "fog" in condition:
+            return "50d"
+        else:
+            return "01d"  # Default to clear sky

@@ -5,12 +5,28 @@ class WeatherAPI:
     """Class to interact with the weather API"""
 
     def __init__(self):
-        self.base_url = "https://api.openweathermap.org/data/2.5"
-        # Get API key from environment variable
         import os
-        self.api_key = os.environ.get('OPENWEATHER_API_KEY')
-        # Use mock data only if no API key is provided
-        self.use_mock_data = not bool(self.api_key)
+        
+        # Try WeatherAPI.com first (more reliable), then OpenWeatherMap
+        self.weatherapi_key = os.environ.get('WEATHERAPI_KEY')
+        self.openweather_key = os.environ.get('OPENWEATHER_API_KEY')
+        
+        if self.weatherapi_key:
+            self.use_weatherapi = True
+            self.base_url = "https://api.weatherapi.com/v1"
+            self.api_key = self.weatherapi_key
+            self.use_mock_data = False
+        elif self.openweather_key:
+            self.use_weatherapi = False
+            self.base_url = "https://api.openweathermap.org/data/2.5"
+            self.api_key = self.openweather_key
+            self.use_mock_data = False
+        else:
+            # No API keys available, use mock data
+            self.use_mock_data = True
+            self.use_weatherapi = False
+            self.base_url = "https://api.openweathermap.org/data/2.5"
+            self.api_key = None
 
         # Hebrew city translations
         self.hebrew_to_english = {
@@ -52,20 +68,73 @@ class WeatherAPI:
         
         if self.use_mock_data:
             return self._get_mock_current_weather(query_city)
-            
-        # For actual API use when you have a valid key
-        url = f"{self.base_url}/weather"
+        
+        if self.use_weatherapi:
+            return self._get_weatherapi_current(query_city)
+        else:
+            return self._get_openweather_current(query_city)
+    
+    def _get_weatherapi_current(self, city: str) -> Dict:
+        """Get current weather from WeatherAPI.com"""
+        url = f"{self.base_url}/current.json"
         params = {
-            "q": f"{query_city},IL",
-            "appid": self.api_key,
-            "units": "metric"  # For Celsius
+            "key": self.api_key,
+            "q": f"{city},Israel",
+            "aqi": "no"
         }
         response = requests.get(url, params=params)
         if response.status_code != 200:
             raise Exception(f"Failed to fetch weather data for {city}: {response.text}")
 
         data = response.json()
+        
+        # Convert WeatherAPI format to OpenWeatherMap format for consistency
+        converted = {
+            "coord": {"lon": data['location']['lon'], "lat": data['location']['lat']},
+            "weather": [{
+                "id": data['current']['condition']['code'],
+                "main": data['current']['condition']['text'],
+                "description": data['current']['condition']['text'].lower(),
+                "icon": "01d"  # Default icon, will be mapped by the UI
+            }],
+            "main": {
+                "temp": data['current']['temp_c'],
+                "feels_like": data['current']['feelslike_c'],
+                "temp_min": data['current']['temp_c'] - 2,
+                "temp_max": data['current']['temp_c'] + 2,
+                "pressure": data['current']['pressure_mb'],
+                "humidity": data['current']['humidity']
+            },
+            "visibility": data['current']['vis_km'] * 1000,
+            "wind": {
+                "speed": data['current']['wind_kph'] / 3.6,  # Convert kph to m/s
+                "deg": data['current']['wind_degree'],
+                "direction": self.get_wind_direction(data['current']['wind_degree'])
+            },
+            "clouds": {"all": data['current']['cloud']},
+            "name": city
+        }
+        
+        # Add precipitation data if present
+        if data['current']['precip_mm'] > 0:
+            converted["rain"] = {"1h": data['current']['precip_mm']}
+        
+        return converted
+    
+    def _get_openweather_current(self, city: str) -> Dict:
+        """Get current weather from OpenWeatherMap"""
+        url = f"{self.base_url}/weather"
+        params = {
+            "q": f"{city},IL",
+            "appid": self.api_key,
+            "units": "metric"
+        }
+        response = requests.get(url, params=params)
+        if response.status_code != 200:
+            raise Exception(f"Failed to fetch weather data for {city}: {response.text}")
 
+        data = response.json()
+        
         # Add wind direction based on degrees
         if 'wind' in data and 'deg' in data['wind']:
             data['wind']['direction'] = self.get_wind_direction(data['wind']['deg'])
@@ -170,12 +239,56 @@ class WeatherAPI:
             
         if self.use_mock_data:
             return self._get_mock_forecast(query_city)
+        
+        if self.use_weatherapi:
+            return self._get_weatherapi_forecast(query_city)
+        else:
+            return self._get_openweather_forecast(query_city)
+    
+    def _get_weatherapi_forecast(self, city: str) -> Dict:
+        """Get forecast from WeatherAPI.com"""
+        url = f"{self.base_url}/forecast.json"
+        params = {
+            "key": self.api_key,
+            "q": f"{city},Israel",
+            "days": 5,
+            "aqi": "no",
+            "alerts": "no"
+        }
+        response = requests.get(url, params=params)
+        if response.status_code != 200:
+            raise Exception(f"Failed to fetch forecast data for {city}: {response.text}")
 
+        data = response.json()
+        
+        # Convert to OpenWeatherMap format
+        forecast_list = []
+        for day in data['forecast']['forecastday']:
+            for hour in day['hour']:
+                from datetime import datetime
+                forecast_item = {
+                    "dt": int(datetime.fromisoformat(hour['time'].replace(' ', 'T')).timestamp()),
+                    "main": {
+                        "temp": hour['temp_c'],
+                        "humidity": hour['humidity']
+                    },
+                    "weather": [{
+                        "main": hour['condition']['text'],
+                        "description": hour['condition']['text'].lower()
+                    }],
+                    "dt_txt": hour['time']
+                }
+                forecast_list.append(forecast_item)
+        
+        return {"list": forecast_list}
+    
+    def _get_openweather_forecast(self, city: str) -> Dict:
+        """Get forecast from OpenWeatherMap"""
         url = f"{self.base_url}/forecast"
         params = {
-            "q": f"{query_city},IL",
+            "q": f"{city},IL",
             "appid": self.api_key,
-            "units": "metric"  # For Celsius
+            "units": "metric"
         }
         response = requests.get(url, params=params)
         if response.status_code != 200:

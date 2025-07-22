@@ -87,7 +87,7 @@ def main():
     use_celsius = st.sidebar.radio("Temperature Unit", ["Celsius", "Fahrenheit"]) == "Celsius"
 
     # Main content
-    st.title(f"Weather in {selected_city}, Israel 🌤️")
+    st.title(f"Weather in {selected_city}, Isra 🌤️")
 
     try:
         # Current weather

@@ -2,7 +2,7 @@ import streamlit as st
 
 # Always set page config first before any other Streamlit commands
 st.set_page_config(
-    page_title="Weather App / אפליקציית מזג אוויר",
+    page_title="Isra Weather App / אפליקציית מזג אוויר",
     page_icon="🌤️",
     layout="wide"
 )
@@ -58,7 +58,7 @@ else:
     # App content
     st.markdown("""
     <div class="centered">
-        <h1>Welcome to the Israel Weather App</h1>
+        <h1>Welcome to the Isra Weather App</h1>
         <h1>ברוכים הבאים לאפליקציית מזג האוויר בישראל</h1>
         <p>Choose your preferred language / בחר את השפה המועדפת עליך</p>
         <div class="btn-container">

@@ -115,3 +115,4 @@ Preferred communication style: Simple, everyday language.
 - ✅ Integrated real weather data using WeatherAPI.com for authentic conditions
 - ✅ Fixed country name display from "Isra" to "Israel" in English version
 - ✅ Added temperature color-coding and live weather statistics to AR overlay
+- ✅ Enhanced dark mode support with proper contrast for forecast cards and UI elements
